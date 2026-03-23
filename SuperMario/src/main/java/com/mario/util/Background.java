@@ -2,6 +2,8 @@ package com.mario.util;
 
 import com.mario.entity.Obstacle;
 import com.mario.entity.ObstacleType;
+import com.mario.entity.Tower;
+import com.mario.entity.Flagpole;
 import com.mario.level.Level1MapLoader;
 import com.mario.level.Level2MapLoader;
 import com.mario.level.Level3MapLoader;
@@ -19,6 +21,8 @@ public class Background {
     private int sort;  // 当前场景序号
     private boolean flag;  // 判断是否到达最后一个场景
     private List<Obstacle> obstacles = new ArrayList<>();  // 障碍物列表
+    private Tower tower = null;
+    private Flagpole flagpole = null;
 
     /**
      * 无参构造
@@ -38,9 +42,9 @@ public class Background {
 
         // 最后一个场景时切换为第二个背景
         if (flag) {
-            bgImage = StaticValue.background1;
-        } else {
             bgImage = StaticValue.background2;
+        } else {
+            bgImage = StaticValue.background1;
         }
 
         loadLevelMap();
@@ -79,58 +83,70 @@ public class Background {
     }
 
     /**
-     * 获取当前场景背景图
+     * 添加城堡到当前场景
+     *
+     * @param x 城堡 x 坐标
+     * @param y 城堡 y 坐标
      */
+    public void addTower(int x, int y) {
+        this.tower = new Tower(x, y, this);
+    }
+
+    /**
+     * 添加旗杆到当前场景
+     *
+     * @param x 旗杆 x 坐标
+     * @param y 旗杆 y 坐标
+     */
+    public void addFlagpole(int x, int y) {
+        this.flagpole = new Flagpole(x, y, this);
+    }
+
     public BufferedImage getBgImage() {
         return bgImage;
     }
 
-    /**
-     * 设置当前场景背景图
-     */
     public void setBgImage(BufferedImage bgImage) {
         this.bgImage = bgImage;
     }
 
-    /**
-     * 获取场景序号
-     */
     public int getSort() {
         return sort;
     }
 
-    /**
-     * 设置场景序号
-     */
     public void setSort(int sort) {
         this.sort = sort;
     }
 
-    /**
-     * 是否为最后场景
-     */
     public boolean isFlag() {
         return flag;
     }
 
-    /**
-     * 设置是否为最后场景
-     */
     public void setFlag(boolean flag) {
         this.flag = flag;
     }
 
-    /**
-     * 获取当前场景障碍物列表
-     */
     public List<Obstacle> getObstacles() {
         return obstacles;
     }
 
-    /**
-     * 设置当前场景障碍物列表
-     */
     public void setObstacles(List<Obstacle> obstacles) {
         this.obstacles = obstacles;
+    }
+
+    public Tower getTower() {
+        return tower;
+    }
+
+    public void setTower(Tower tower) {
+        this.tower = tower;
+    }
+
+    public Flagpole getFlagpole() {
+        return flagpole;
+    }
+
+    public void setFlagpole(Flagpole flagpole) {
+        this.flagpole = flagpole;
     }
 }
