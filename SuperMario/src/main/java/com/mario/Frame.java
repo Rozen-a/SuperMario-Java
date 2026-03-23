@@ -20,8 +20,12 @@ import java.util.List;
 public class Frame extends JFrame implements KeyListener {
     private List<Background> all_backgrounds = new ArrayList<>();  // 存储所有背景
     private Background now_background = new Background();  // 存储当前背景
+    private int currentBackgroundIndex = 0;  // 当前关卡索引（0-based）
     private Mario mario;  // 马里奥对象
     private Image offScreenImage = null;  // 双缓存
+    private static final int NEXT_LEVEL_TRIGGER_X = 900;  // 触发下一关的 x 阈值
+    private static final int MARIO_START_X = 10;  // 切关后马里奥初始 x
+    private static final int MARIO_START_Y = 420;  // 切关后马里奥初始 y
 
     /**
      * 程序入口
@@ -53,22 +57,51 @@ public class Frame extends JFrame implements KeyListener {
         }
 
         // 设置当前场景
-        now_background = all_backgrounds.get(1);
+        now_background = all_backgrounds.get(currentBackgroundIndex);
 
         // 初始化马里奥
-        mario = new Mario(10, 420);
+        mario = new Mario(MARIO_START_X, MARIO_START_Y);
         mario.setBackground(now_background);
 
         // 启动固定帧重绘：
         // 1) 每隔 30ms 触发一次回调（约 33 FPS），用于持续刷新游戏画面；
         // 2) 回调中调用 repaint()，会通知 Swing 在合适时机重新执行 paint(...)；
         // 3) 没有这个定时器时，界面通常只在初始化或事件触发时重绘，动画会停在静态帧。
-        Timer timer = new Timer(30, e -> repaint());
+        Timer timer = new Timer(30, e -> {
+            switchToNextLevelIfNeeded();
+            repaint();
+        });
         // 启动计时器后，回调开始周期性执行，角色移动/跳跃状态才能连续显示出来。
         timer.start();
 
         // 绘制图像
         repaint();
+    }
+
+    /**
+     * 马里奥到达右侧边界时切换到下一关（仅 1、2 关可切换）
+     */
+    private void switchToNextLevelIfNeeded() {
+        if (mario == null) {
+            return;
+        }
+        // 最后一关不触发
+        if (currentBackgroundIndex >= all_backgrounds.size() - 1) {
+            return;
+        }
+        // 马里奥未到达右侧边界，不触发切换
+        if (mario.getX() < NEXT_LEVEL_TRIGGER_X) {
+            return;
+        }
+
+        // 切换到下一关
+        currentBackgroundIndex++;
+        now_background = all_backgrounds.get(currentBackgroundIndex);
+
+        // 切关后重置马里奥位置并更新碰撞检测所用场景
+        mario.setX(MARIO_START_X);
+        mario.setY(MARIO_START_Y);
+        mario.setBackground(now_background);
     }
 
     /**
