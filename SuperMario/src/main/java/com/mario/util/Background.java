@@ -1,7 +1,11 @@
 package com.mario.util;
 
-import com.mario.Entity.Obstacle;
-import com.mario.Entity.ObstacleType;
+import com.mario.entity.Obstacle;
+import com.mario.entity.ObstacleType;
+import com.mario.level.Level1MapLoader;
+import com.mario.level.Level2MapLoader;
+import com.mario.level.Level3MapLoader;
+import com.mario.level.LevelMapLoader;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -16,10 +20,18 @@ public class Background {
     private boolean flag;  // 判断是否到达最后一个场景
     private List<Obstacle> obstacles = new ArrayList<>();  // 障碍物列表
 
-    /* Constructor */
+    /**
+     * 无参构造
+     */
     public Background() {
     }
 
+    /**
+     * 创建场景并加载对应关卡地图
+     *
+     * @param sort 场景序号
+     * @param flag 是否为最后场景
+     */
     public Background(int sort, boolean flag) {
         this.sort = sort;
         this.flag = flag;
@@ -31,83 +43,93 @@ public class Background {
             bgImage = StaticValue.background2;
         }
 
-        if (sort == 1) {  // 绘制第一关地图
-            /* 地面 */
-            // 上层地面
-            for (int i = 0; i < 30; i++) {
-                obstacles.add(new Obstacle(i * 30, 450, ObstacleType.SOIL_UP, this));
-            }
-            // 下层地面
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 30; j++) {
-                    obstacles.add(new Obstacle(j * 30, 570 - i * 30, ObstacleType.SOIL_BASE, this));
-                }   
-            }
-
-            /* 浮空岛 */
-            // unbreakable*2
-            for (int i = 0; i < 2; i++) {
-                obstacles.add(new Obstacle(150 + i * 30, 300, ObstacleType.UNBREAKABLE_BLOCK, this));
-            }
-
-            // breakable*2 + unbreakable*3 + breakable*1 + unbreakable*3 + breakable*1
-            for (int i = 0; i < 2; i++) {
-                obstacles.add(new Obstacle(330 + i * 30, 300, ObstacleType.BREAKABLE_BLOCK, this));
-            }
-            for (int i = 0; i < 3; i++) {
-                obstacles.add(new Obstacle(390 + i * 30, 300, ObstacleType.UNBREAKABLE_BLOCK, this));
-            }
-            obstacles.add(new Obstacle(480, 300, ObstacleType.BREAKABLE_BLOCK, this));
-            for (int i = 0; i < 3; i++) {
-                obstacles.add(new Obstacle(510 + i * 30, 300, ObstacleType.UNBREAKABLE_BLOCK, this));
-            }
-            obstacles.add(new Obstacle(600, 300, ObstacleType.BREAKABLE_BLOCK, this));
-
-            // unbreakable*4
-            for (int i = 0; i < 4; i++) {
-                obstacles.add(new Obstacle(450 + i * 30, 240, ObstacleType.UNBREAKABLE_BLOCK, this));
-            }
-
-            /* 水管 */
-            obstacles.add(new Obstacle(630, 390, ObstacleType.PIPE1, this));
-            obstacles.add(new Obstacle(660, 390, ObstacleType.PIPE2, this));
-            for (int i = 0; i < 6; i++) {
-                obstacles.add(new Obstacle(632, 420 + i * 30, ObstacleType.PIPE3, this));
-                obstacles.add(new Obstacle(660, 420 + i * 30, ObstacleType.PIPE4, this));
-            }
-
-        }
+        loadLevelMap();
     }
 
-    /* Getter and Setter */
+    /**
+     * 按场景序号加载关卡地图
+     */
+    private void loadLevelMap() {
+        LevelMapLoader loader;
+        switch (sort) {
+            case 1:
+                loader = new Level1MapLoader();
+                break;
+            case 2:
+                loader = new Level2MapLoader();
+                break;
+            case 3:
+                loader = new Level3MapLoader();
+                break;
+            default:
+                return;
+        }
+        loader.load(this);
+    }
+
+    /**
+     * 添加障碍物到当前场景
+     *
+     * @param x 障碍物 x 坐标
+     * @param y 障碍物 y 坐标
+     * @param type 障碍物类型
+     */
+    public void addObstacle(int x, int y, ObstacleType type) {
+        obstacles.add(new Obstacle(x, y, type, this));
+    }
+
+    /**
+     * 获取当前场景背景图
+     */
     public BufferedImage getBgImage() {
         return bgImage;
     }
 
+    /**
+     * 设置当前场景背景图
+     */
     public void setBgImage(BufferedImage bgImage) {
         this.bgImage = bgImage;
     }
 
+    /**
+     * 获取场景序号
+     */
     public int getSort() {
         return sort;
     }
 
+    /**
+     * 设置场景序号
+     */
     public void setSort(int sort) {
         this.sort = sort;
     }
 
+    /**
+     * 是否为最后场景
+     */
     public boolean isFlag() {
         return flag;
     }
 
+    /**
+     * 设置是否为最后场景
+     */
     public void setFlag(boolean flag) {
         this.flag = flag;
     }
 
+    /**
+     * 获取当前场景障碍物列表
+     */
     public List<Obstacle> getObstacles() {
         return obstacles;
     }
 
+    /**
+     * 设置当前场景障碍物列表
+     */
     public void setObstacles(List<Obstacle> obstacles) {
         this.obstacles = obstacles;
     }

@@ -39,7 +39,12 @@ public class StaticValue {
     // 食人花敌人
     public static List<BufferedImage> man_eating_flower = new ArrayList<>();
 
-    // 统一的图片加载方法
+    /**
+     * 从 classpath 加载图片资源
+     *
+     * @param fileName 文件名
+     * @return 读取到的图片
+     */
     private static BufferedImage loadImage(String fileName) {
         String resourcePath = "/images/" + fileName;
         try (InputStream inputStream = StaticValue.class.getResourceAsStream(resourcePath)) {
@@ -52,7 +57,9 @@ public class StaticValue {
         }
     }
 
-    // 初始化图片
+    /**
+     * 初始化并缓存游戏图片资源
+     */
     public static void init() {
         // 允许重复调用 init，先清空列表避免重复追加
         mario_run_L.clear();

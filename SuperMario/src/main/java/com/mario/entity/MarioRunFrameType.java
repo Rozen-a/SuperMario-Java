@@ -1,4 +1,4 @@
-package com.mario.Entity;
+package com.mario.entity;
 
 /**
  * 马里奥跑动帧类型
@@ -15,6 +15,11 @@ public enum MarioRunFrameType {
         this.spriteIndex = spriteIndex;
     }
 
+    /**
+     * 获取在图片列表中的索引
+     *
+     * @return 图片索引
+     */
     public int getSpriteIndex() {
         return spriteIndex;
     }

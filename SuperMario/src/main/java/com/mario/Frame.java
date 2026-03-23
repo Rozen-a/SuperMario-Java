@@ -1,6 +1,6 @@
 package com.mario;
 
-import com.mario.Entity.Obstacle;
+import com.mario.entity.Obstacle;
 import com.mario.util.Background;
 import com.mario.util.StaticValue;
 
@@ -19,10 +19,18 @@ public class Frame extends JFrame implements KeyListener {
     private Background now_background = new Background();  // 存储当前背景
     private Image offScreenImage = null;  // 双缓存
 
+    /**
+     * 程序入口
+     *
+     * @param args 启动参数
+     */
     public static void main(String[] args) {
         Frame frame = new Frame();
     }
 
+    /**
+     * 初始化游戏窗口与场景
+     */
     public Frame() {
         this.setSize(900, 600);  // 窗口大小设置
         this.setLocationRelativeTo(null);  // 窗口居中显示
@@ -47,6 +55,11 @@ public class Frame extends JFrame implements KeyListener {
         repaint();
     }
 
+    /**
+     * 绘制当前帧画面（背景与障碍物）
+     *
+     * @param g 窗口画笔
+     */
     @Override
     public void paint(Graphics g) {
         // 第一次绘制时创建离屏画布，后续复用减少对象创建
@@ -71,16 +84,25 @@ public class Frame extends JFrame implements KeyListener {
         g.drawImage(offScreenImage, 0, 0, this);
     }
 
+    /**
+     * 键盘输入字符事件
+     */
     @Override
     public void keyTyped(KeyEvent e) {
 
     }
 
+    /**
+     * 键盘按下事件
+     */
     @Override
     public void keyPressed(KeyEvent e) {
 
     }
 
+    /**
+     * 键盘释放事件
+     */
     @Override
     public void keyReleased(KeyEvent e) {
 
