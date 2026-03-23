@@ -20,11 +20,6 @@ public enum ObstacleType {
         this.spriteIndex = spriteIndex;
     }
 
-    /**
-     * 获取在图片列表中的索引
-     *
-     * @return 图片索引
-     */
     public int getSpriteIndex() {
         return spriteIndex;
     }
