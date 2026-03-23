@@ -29,7 +29,7 @@ public class Frame extends JFrame implements KeyListener {
      * @param args 启动参数
      */
     public static void main(String[] args) {
-        Frame frame = new Frame();
+        new Frame();
     }
 
     /**
@@ -57,6 +57,15 @@ public class Frame extends JFrame implements KeyListener {
 
         // 初始化马里奥
         mario = new Mario(10, 420);
+        mario.setBackground(now_background);
+
+        // 启动固定帧重绘：
+        // 1) 每隔 30ms 触发一次回调（约 33 FPS），用于持续刷新游戏画面；
+        // 2) 回调中调用 repaint()，会通知 Swing 在合适时机重新执行 paint(...)；
+        // 3) 没有这个定时器时，界面通常只在初始化或事件触发时重绘，动画会停在静态帧。
+        Timer timer = new Timer(30, e -> repaint());
+        // 启动计时器后，回调开始周期性执行，角色移动/跳跃状态才能连续显示出来。
+        timer.start();
 
         // 绘制图像
         repaint();
@@ -121,7 +130,19 @@ public class Frame extends JFrame implements KeyListener {
      */
     @Override
     public void keyPressed(KeyEvent e) {
-
+        if (mario == null) {
+            return;
+        }
+        int code = e.getKeyCode();
+        if (code == KeyEvent.VK_LEFT) {
+            mario.setLeftPressed(true);
+        } else if (code == KeyEvent.VK_RIGHT) {
+            mario.setRightPressed(true);
+        } else if (code == KeyEvent.VK_SHIFT) {
+            mario.setRunPressed(true);
+        } else if (code == KeyEvent.VK_UP || code == KeyEvent.VK_SPACE) {
+            mario.jump();
+        }
     }
 
     /**
@@ -129,6 +150,16 @@ public class Frame extends JFrame implements KeyListener {
      */
     @Override
     public void keyReleased(KeyEvent e) {
-
+        if (mario == null) {
+            return;
+        }
+        int code = e.getKeyCode();
+        if (code == KeyEvent.VK_LEFT) {
+            mario.setLeftPressed(false);
+        } else if (code == KeyEvent.VK_RIGHT) {
+            mario.setRightPressed(false);
+        } else if (code == KeyEvent.VK_SHIFT) {
+            mario.setRunPressed(false);
+        }
     }
 }
