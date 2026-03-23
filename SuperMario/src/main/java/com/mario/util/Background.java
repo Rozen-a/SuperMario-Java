@@ -1,9 +1,9 @@
 package com.mario.util;
 
-import com.mario.entity.Obstacle;
-import com.mario.entity.ObstacleType;
-import com.mario.entity.Tower;
-import com.mario.entity.Flagpole;
+import com.mario.entity.scene.Obstacle;
+import com.mario.entity.scene.ObstacleType;
+import com.mario.entity.scene.Tower;
+import com.mario.entity.scene.Flagpole;
 import com.mario.level.Level1MapLoader;
 import com.mario.level.Level2MapLoader;
 import com.mario.level.Level3MapLoader;

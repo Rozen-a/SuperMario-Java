@@ -1,4 +1,4 @@
-package com.mario.entity;
+package com.mario.entity.scene;
 
 import com.mario.util.Background;
 import com.mario.util.StaticValue;
@@ -6,26 +6,26 @@ import com.mario.util.StaticValue;
 import java.awt.image.BufferedImage;
 
 /**
- * 城堡类
+ * 旗杆类
  */
-public class Tower {
+public class Flagpole {
     private int x;
     private int y;
     private BufferedImage show = null;
     private Background background = null;
 
     /**
-     * 创建城堡对象
+     * 创建旗杆对象
      *
-     * @param x 城堡 x 坐标
-     * @param y 城堡 y 坐标
+     * @param x 旗杆 x 坐标
+     * @param y 旗杆 y 坐标
      * @param background 所属背景
      */
-    public Tower(int x, int y, Background background) {
+    public Flagpole(int x, int y, Background background) {
         this.x = x;
         this.y = y;
         this.background = background;
-        this.show = StaticValue.tower;
+        this.show = StaticValue.flagpole;
     }
 
     public int getX() {

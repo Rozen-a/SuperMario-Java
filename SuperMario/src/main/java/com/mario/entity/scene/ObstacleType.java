@@ -1,4 +1,4 @@
-package com.mario.entity;
+package com.mario.entity.scene;
 
 /**
  * 障碍物类型

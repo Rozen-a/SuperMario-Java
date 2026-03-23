@@ -1,4 +1,4 @@
-package com.mario.entity;
+package com.mario.entity.scene;
 
 import com.mario.util.Background;
 import com.mario.util.StaticValue;

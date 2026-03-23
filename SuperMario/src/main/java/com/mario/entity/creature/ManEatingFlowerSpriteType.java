@@ -1,4 +1,4 @@
-package com.mario.entity;
+package com.mario.entity.creature;
 
 /**
  * 食人花图片类型

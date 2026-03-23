@@ -1,4 +1,4 @@
-package com.mario.entity;
+package com.mario.entity.creature;
 
 /**
  * 蘑菇敌人图片类型

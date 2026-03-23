@@ -1,8 +1,8 @@
 package com.mario;
 
-import com.mario.entity.Obstacle;
-import com.mario.entity.Flagpole;
-import com.mario.entity.Tower;
+import com.mario.entity.scene.Obstacle;
+import com.mario.entity.scene.Flagpole;
+import com.mario.entity.scene.Tower;
 import com.mario.util.Background;
 import com.mario.util.StaticValue;
 
@@ -51,7 +51,7 @@ public class Frame extends JFrame implements KeyListener {
         }
 
         // 设置当前场景
-        now_background = all_backgrounds.get(0);
+        now_background = all_backgrounds.get(1);
 
         // 绘制图像
         repaint();

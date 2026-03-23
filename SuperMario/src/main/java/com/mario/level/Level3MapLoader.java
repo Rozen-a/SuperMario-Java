@@ -1,6 +1,6 @@
 package com.mario.level;
 
-import com.mario.entity.ObstacleType;
+import com.mario.entity.scene.ObstacleType;
 import com.mario.util.Background;
 
 /**

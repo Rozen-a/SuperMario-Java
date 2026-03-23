@@ -1,4 +1,4 @@
-package com.mario.entity;
+package com.mario.entity.creature;
 
 /**
  * 马里奥跑动帧类型
