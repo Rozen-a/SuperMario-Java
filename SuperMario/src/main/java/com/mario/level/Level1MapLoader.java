@@ -26,47 +26,36 @@ public class Level1MapLoader implements LevelMapLoader {
             }
         }
 
-        /* 方块 */
+        /* 浮空岛 */
         // unbreakable*2
         for (int i = 0; i < 2; i++) {
             background.addObstacle(150 + i * 30, 300, ObstacleType.UNBREAKABLE_BLOCK);
         }
 
-        // unbreakable*2
-        for (int i = 0; i < 2; i++) {
-            background.addObstacle(240 + i * 30, 360, ObstacleType.UNBREAKABLE_BLOCK);
-        }
-
-        // unbreakable*1
-        background.addObstacle(330, 360, ObstacleType.UNBREAKABLE_BLOCK);
-
-        // unbreakable*1
-        background.addObstacle(360, 330, ObstacleType.UNBREAKABLE_BLOCK);
-
         // breakable*2 + unbreakable*3 + breakable*1 + unbreakable*3 + breakable*1
         for (int i = 0; i < 2; i++) {
-            background.addObstacle(420 + i * 30, 300, ObstacleType.BREAKABLE_BLOCK);
+            background.addObstacle(330 + i * 30, 300, ObstacleType.BREAKABLE_BLOCK);
         }
         for (int i = 0; i < 3; i++) {
-            background.addObstacle(480 + i * 30, 300, ObstacleType.UNBREAKABLE_BLOCK);
+            background.addObstacle(390 + i * 30, 300, ObstacleType.UNBREAKABLE_BLOCK);
         }
-        background.addObstacle(570, 300, ObstacleType.BREAKABLE_BLOCK);
+        background.addObstacle(480, 300, ObstacleType.BREAKABLE_BLOCK);
         for (int i = 0; i < 3; i++) {
-            background.addObstacle(600 + i * 30, 300, ObstacleType.UNBREAKABLE_BLOCK);
+            background.addObstacle(510 + i * 30, 300, ObstacleType.UNBREAKABLE_BLOCK);
         }
-        background.addObstacle(690, 300, ObstacleType.BREAKABLE_BLOCK);
+        background.addObstacle(600, 300, ObstacleType.BREAKABLE_BLOCK);
 
         // unbreakable*4
         for (int i = 0; i < 4; i++) {
-            background.addObstacle(540 + i * 30, 240, ObstacleType.UNBREAKABLE_BLOCK);
+            background.addObstacle(450 + i * 30, 240, ObstacleType.UNBREAKABLE_BLOCK);
         }
 
         /* 水管 */
-        background.addObstacle(720, 390, ObstacleType.PIPE1);
-        background.addObstacle(750, 390, ObstacleType.PIPE2);
+        background.addObstacle(630, 390, ObstacleType.PIPE1);
+        background.addObstacle(660, 390, ObstacleType.PIPE2);
         for (int i = 0; i < 6; i++) {
-            background.addObstacle(722, 420 + i * 30, ObstacleType.PIPE3);
-            background.addObstacle(750, 420 + i * 30, ObstacleType.PIPE4);
+            background.addObstacle(632, 420 + i * 30, ObstacleType.PIPE3);
+            background.addObstacle(660, 420 + i * 30, ObstacleType.PIPE4);
         }
     }
 }

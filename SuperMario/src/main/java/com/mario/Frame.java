@@ -1,8 +1,6 @@
 package com.mario;
 
 import com.mario.entity.Obstacle;
-import com.mario.entity.Flagpole;
-import com.mario.entity.Tower;
 import com.mario.util.Background;
 import com.mario.util.StaticValue;
 
@@ -50,7 +48,7 @@ public class Frame extends JFrame implements KeyListener {
             all_backgrounds.add(new Background(i, i == 3));
         }
 
-        // 设置当前场景
+        // 设置当前背景
         now_background = all_backgrounds.get(0);
 
         // 绘制图像
@@ -80,18 +78,6 @@ public class Frame extends JFrame implements KeyListener {
         // 在背景上叠加绘制当前场景的所有障碍物
         for (Obstacle obstacle : now_background.getObstacles()) {
             graphics.drawImage(obstacle.getShow(), obstacle.getX(), obstacle.getY(), this);
-        }
-
-        // 判空绘制旗杆（部分关卡可能没有）
-        Flagpole flagpole = now_background.getFlagpole();
-        if (flagpole != null) {
-            graphics.drawImage(flagpole.getShow(), flagpole.getX(), flagpole.getY(), this);
-        }
-
-        // 判空绘制城堡（部分关卡可能没有）
-        Tower tower = now_background.getTower();
-        if (tower != null) {
-            graphics.drawImage(tower.getShow(), tower.getX(), tower.getY(), this);
         }
 
         // 将离屏画布整体绘制到窗口
