@@ -1,5 +1,6 @@
 package com.mario;
 
+import com.mario.Entity.Obstacle;
 import com.mario.util.Background;
 import com.mario.util.StaticValue;
 
@@ -48,13 +49,25 @@ public class Frame extends JFrame implements KeyListener {
 
     @Override
     public void paint(Graphics g) {
+        // 第一次绘制时创建离屏画布，后续复用减少对象创建
         if (offScreenImage == null) {
             offScreenImage = createImage(900, 600);
         }
 
+        // 所有元素先绘制到离屏画布，再一次性贴到窗口，减少闪烁
         Graphics graphics = offScreenImage.getGraphics();
+        // 每帧先清空画布，避免残影
         graphics.fillRect(0, 0, 900, 600);
+
+        // 绘制当前场景背景
         graphics.drawImage(now_background.getBgImage(), 0, 0, this);
+
+        // 在背景上叠加绘制当前场景的所有障碍物
+        for (Obstacle obstacle : now_background.getObstacles()) {
+            graphics.drawImage(obstacle.getShow(), obstacle.getX(), obstacle.getY(), this);
+        }
+
+        // 将离屏画布整体绘制到窗口
         g.drawImage(offScreenImage, 0, 0, this);
     }
 
