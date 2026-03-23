@@ -1,5 +1,6 @@
 package com.mario;
 
+import com.mario.entity.creature.Mario;
 import com.mario.entity.scene.Obstacle;
 import com.mario.entity.scene.Flagpole;
 import com.mario.entity.scene.Tower;
@@ -19,6 +20,7 @@ import java.util.List;
 public class Frame extends JFrame implements KeyListener {
     private List<Background> all_backgrounds = new ArrayList<>();  // 存储所有背景
     private Background now_background = new Background();  // 存储当前背景
+    private Mario mario;  // 马里奥对象
     private Image offScreenImage = null;  // 双缓存
 
     /**
@@ -52,6 +54,9 @@ public class Frame extends JFrame implements KeyListener {
 
         // 设置当前场景
         now_background = all_backgrounds.get(1);
+
+        // 初始化马里奥
+        mario = new Mario(10, 420);
 
         // 绘制图像
         repaint();
@@ -92,6 +97,11 @@ public class Frame extends JFrame implements KeyListener {
         Tower tower = now_background.getTower();
         if (tower != null) {
             graphics.drawImage(tower.getShow(), tower.getX(), tower.getY(), this);
+        }
+
+        // 绘制马里奥
+        if (mario != null) {
+            graphics.drawImage(mario.getShow(), mario.getX(), mario.getY(), this);
         }
 
         // 将离屏画布整体绘制到窗口
