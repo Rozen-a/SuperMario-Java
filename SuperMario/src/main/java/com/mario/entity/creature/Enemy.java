@@ -17,9 +17,20 @@ public class Enemy implements Runnable {
     // 敌人线程
     private Thread thread;
 
+    /**
+     * 无参构造
+     */
     public Enemy() {
     }
 
+    /**
+     * 创建敌人对象
+     *
+     * @param x 敌人 x 坐标
+     * @param y 敌人 y 坐标
+     * @param toRight 敌人运动方向
+     * @param background 敌人所在背景
+     */
     public Enemy(int x, int y, boolean toRight, Background background) {
         this.x = x;
         this.y = y;
