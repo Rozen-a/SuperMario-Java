@@ -8,11 +8,10 @@ public enum ObstacleType {
     UNBREAKABLE_BLOCK(1),
     SOIL_UP(2),
     SOIL_BASE(3),
-    FLAG(4),
-    PIPE1(5),
-    PIPE2(6),
-    PIPE3(7),
-    PIPE4(8);
+    PIPE1(4),
+    PIPE2(5),
+    PIPE3(6),
+    PIPE4(7);
 
     private final int spriteIndex;
 

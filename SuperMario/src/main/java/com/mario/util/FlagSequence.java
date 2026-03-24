@@ -15,6 +15,7 @@ public class FlagSequence {
 
     private boolean running;            // 过场是否进行中
     private boolean slideWithFlag;      // 是否处于与旗子同步下落阶段
+    private boolean finished;           // 旗子下落流程是否已完成（完成后不再检测触旗）
     private int marioFallSpeed;         // 旗子停止后马里奥的加速下落速度
 
     private final int expand = 10;  // 旗帜碰撞箱扩展像素值
@@ -27,6 +28,10 @@ public class FlagSequence {
      */
     public void update(Background background, Mario mario) {
         if (background == null || mario == null) {
+            return;
+        }
+        // 旗子下落完毕后，不再进行触旗碰撞检测与过场逻辑
+        if (finished) {
             return;
         }
         Flag flag = background.getFlag();
@@ -81,6 +86,7 @@ public class FlagSequence {
         mario.setYSpeed(0);
         mario.setScriptedMode(false);
         running = false;
+        finished = true;
     }
 
     /**
@@ -116,6 +122,7 @@ public class FlagSequence {
     public void reset() {
         running = false;
         slideWithFlag = false;
+        finished = false;
         marioFallSpeed = 0;
     }
 }

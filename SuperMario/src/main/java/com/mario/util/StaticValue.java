@@ -29,6 +29,8 @@ public class StaticValue {
 
     // 旗杆
     public static BufferedImage flagpole = null;
+    // 旗子
+    public static BufferedImage flag = null;
 
     // 障碍物
     public static List<BufferedImage> obstacle = new ArrayList<>();
@@ -90,6 +92,8 @@ public class StaticValue {
 
         // 加载旗杆图片
         flagpole = loadImage("flagpole.png");
+        // 加载旗子图片
+        flag = loadImage("flag.png");
 
 
         // 加载障碍物
@@ -97,7 +101,6 @@ public class StaticValue {
         obstacle.add(loadImage("block_unbreakable.png"));
         obstacle.add(loadImage("soil_up.png"));
         obstacle.add(loadImage("soil_base.png"));
-        obstacle.add(loadImage("flag.png"));
         for (int i = 1; i <= 4; i++){
             obstacle.add(loadImage("pipe" + i + ".png"));
         }

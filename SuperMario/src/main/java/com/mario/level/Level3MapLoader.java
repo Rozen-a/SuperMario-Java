@@ -1,6 +1,5 @@
 package com.mario.level;
 
-import com.mario.entity.type.ManEatingFlowerSpriteType;
 import com.mario.entity.type.MushroomSpriteType;
 import com.mario.entity.type.ObstacleType;
 import com.mario.util.Background;

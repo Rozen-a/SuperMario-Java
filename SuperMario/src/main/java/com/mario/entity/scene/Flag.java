@@ -1,6 +1,5 @@
 package com.mario.entity.scene;
 
-import com.mario.entity.type.ObstacleType;
 import com.mario.util.Background;
 import com.mario.util.StaticValue;
 
@@ -32,7 +31,7 @@ public class Flag {
         this.x = x;
         this.y = y;
         this.background = background;
-        this.show = StaticValue.obstacle.get(ObstacleType.FLAG.getSpriteIndex());
+        this.show = StaticValue.flag;
     }
 
     public int getX() {
