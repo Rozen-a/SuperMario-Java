@@ -4,7 +4,7 @@ import com.mario.util.Background;
 
 import java.awt.image.BufferedImage;
 
-public class Enemy implements Runnable {
+public abstract class Enemy implements Runnable {
     // 敌人在场景中的坐标
     private int x;
     private int y;
@@ -40,9 +40,10 @@ public class Enemy implements Runnable {
         this.thread.start();
     }
 
+    public abstract void death();
+
     @Override
-    public void run() {
-    }
+    public abstract void run();
 
     public int getX() {
         return x;

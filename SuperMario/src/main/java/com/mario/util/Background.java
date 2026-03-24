@@ -1,6 +1,11 @@
 package com.mario.util;
 
+import com.mario.entity.creature.Enemy;
+import com.mario.entity.creature.ManEatingFlower;
+import com.mario.entity.creature.Mushroom;
 import com.mario.entity.scene.Obstacle;
+import com.mario.entity.type.ManEatingFlowerSpriteType;
+import com.mario.entity.type.MushroomSpriteType;
 import com.mario.entity.type.ObstacleType;
 import com.mario.entity.scene.Tower;
 import com.mario.entity.scene.Flagpole;
@@ -22,6 +27,7 @@ public class Background {
     private int sort;  // 当前场景序号
     private boolean flag;  // 判断是否到达最后一个场景
     private List<Obstacle> obstacles = new ArrayList<>();  // 障碍物列表
+    private List<Enemy> enemyList = new ArrayList<>();  // 敌人列表
     private Tower tower = null;
     private Flagpole flagpole = null;
     private Flag sceneFlag = null;
@@ -82,6 +88,32 @@ public class Background {
      */
     public void addObstacle(int x, int y, ObstacleType type) {
         obstacles.add(new Obstacle(x, y, type, this));
+    }
+
+    /**
+     * 创建并添加食人花敌人
+     *
+     * @param x 食人花 x 坐标
+     * @param y 食人花 y 坐标
+     * @param toRight 食人花朝向
+     * @param type 食人花图片类型
+     */
+    public void addManEatingFlower(int x, int y, boolean toRight, ManEatingFlowerSpriteType type) {
+        enemyList.add(new ManEatingFlower(x, y, toRight, this, type));
+    }
+
+    /**
+     * 创建并添加蘑菇敌人
+     *
+     * @param x 蘑菇 x 坐标
+     * @param y 蘑菇 y 坐标
+     * @param toRight 蘑菇朝向
+     * @param leftLimitX 蘑菇运动左边界
+     * @param rightLimitX 蘑菇运动右边界
+     * @param type 蘑菇图片类型
+     */
+    public void addMushroom(int x, int y, boolean toRight, int leftLimitX, int rightLimitX, MushroomSpriteType type) {
+        enemyList.add(new Mushroom(x, y, toRight, this, leftLimitX, rightLimitX, type));
     }
 
     /**
@@ -168,5 +200,21 @@ public class Background {
 
     public void setFlag(Flag flag) {
         this.sceneFlag = flag;
+    }
+
+    public List<Enemy> getEnemyList() {
+        return enemyList;
+    }
+
+    public void setEnemyList(List<Enemy> enemyList) {
+        this.enemyList = enemyList;
+    }
+
+    public Flag getSceneFlag() {
+        return sceneFlag;
+    }
+
+    public void setSceneFlag(Flag sceneFlag) {
+        this.sceneFlag = sceneFlag;
     }
 }
