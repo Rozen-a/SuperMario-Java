@@ -17,6 +17,8 @@ public class FlagSequence {
     private boolean slideWithFlag;      // 是否处于与旗子同步下落阶段
     private int marioFallSpeed;         // 旗子停止后马里奥的加速下落速度
 
+    private int expand = 10;  // 旗帜碰撞箱扩展像素值
+
     /**
      * 每帧更新触旗过场。
      *
@@ -98,10 +100,11 @@ public class FlagSequence {
         int marioY = mario.getY();
         int marioW = mario.getShow().getWidth();
         int marioH = mario.getShow().getHeight();
-        int flagX = flag.getX();
-        int flagY = flag.getY();
-        int flagW = flag.getShow().getWidth();
-        int flagH = flag.getShow().getHeight();
+        // 旗子碰撞箱扩大
+        int flagX = flag.getX() - expand;
+        int flagY = flag.getY() - expand;
+        int flagW = flag.getShow().getWidth() + expand * 2;
+        int flagH = flag.getShow().getHeight() + expand * 2;
         // AABB 判定：x、y 两轴的投影都存在交集即视为接触
         return marioX < flagX + flagW && marioX + marioW > flagX
                 && marioY < flagY + flagH && marioY + marioH > flagY;
