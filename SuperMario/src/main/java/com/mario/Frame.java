@@ -21,7 +21,7 @@ import java.util.List;
 public class Frame extends JFrame implements KeyListener {
     private List<Background> all_backgrounds = new ArrayList<>();  // 存储所有背景
     private Background now_background = new Background();  // 存储当前背景
-    private int currentBackgroundIndex = 0;  // 当前关卡索引（0-based）
+    private int currentBackgroundIndex = 2;  // 当前关卡索引（0-based）
     private Mario mario;  // 马里奥对象
     private Image offScreenImage = null;  // 双缓存
     private Timer gameTimer;  // 主循环计时器（用于统一暂停/结束游戏）
@@ -67,6 +67,7 @@ public class Frame extends JFrame implements KeyListener {
         mario = new Mario(MARIO_START_X, MARIO_START_Y);
         enemyCollisionHandler = new EnemyCollisionHandler();
         gameStateController = new GameStateController(this, mario);
+
         loadLevel(currentBackgroundIndex);
 
         // 启动固定帧重绘：
@@ -87,6 +88,9 @@ public class Frame extends JFrame implements KeyListener {
 
         // 绘制图像
         repaint();
+
+        // 初始化时开始播放 bgm
+        MusicPlayer.playBGM("Ground");
     }
 
     /**
@@ -114,6 +118,8 @@ public class Frame extends JFrame implements KeyListener {
      */
     private void resetCurrentLevel() {
         loadLevel(currentBackgroundIndex);
+        // 重置关卡时重新播放 bgm
+        MusicPlayer.playBGM("Ground");
     }
 
     /**
@@ -145,8 +151,6 @@ public class Frame extends JFrame implements KeyListener {
 
         // 复位触旗过场状态
         flagSequence.reset();
-
-        MusicPlayer.playBGM("Ground");
     }
 
     /**

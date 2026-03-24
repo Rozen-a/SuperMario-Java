@@ -13,12 +13,15 @@ public class ManEatingFlower extends Enemy {
     private static final int MOVE_STEP = 1;  // 运动步长
     private static final int LOOP_SLEEP_MS = 50;  // 循环睡眠时间
     private static final int FRAME_SWITCH_TICKS = 6;  // 帧切换时间
+    private static final int BOTTOM_PAUSE_TICKS = 15;  // 触底停顿时间
 
     // 上下运动边界（topLimitY <= y <= bottomLimitY）
     private int topLimitY;
     private int bottomLimitY;
     // 当前是否向上移动
     private boolean movingUp = true;
+    // 触底后的停顿计时
+    private int bottomPauseTick;
     // 父类构造会启动线程；用该标记确保边界初始化后再执行主循环
     private volatile boolean initialized;
 
@@ -59,6 +62,9 @@ public class ManEatingFlower extends Enemy {
         }
 
         while (true) {
+            if (bottomPauseTick > 0) {
+                bottomPauseTick--;
+            } else {
             // 在上下边界之间往返移动
             if (movingUp) {
                 setY(Math.max(getY() - MOVE_STEP, topLimitY));
@@ -69,7 +75,9 @@ public class ManEatingFlower extends Enemy {
                 setY(Math.min(getY() + MOVE_STEP, bottomLimitY));
                 if (getY() >= bottomLimitY) {
                     movingUp = true;
+                    bottomPauseTick = BOTTOM_PAUSE_TICKS;
                 }
+            }
             }
 
             // 固定 tick 后切换一帧，形成两帧循环动画
