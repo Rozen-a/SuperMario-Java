@@ -1,5 +1,6 @@
 package com.mario.entity.scene;
 
+import com.mario.entity.type.ObstacleType;
 import com.mario.util.Background;
 import com.mario.util.StaticValue;
 

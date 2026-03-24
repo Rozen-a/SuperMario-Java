@@ -17,7 +17,7 @@ public class FlagSequence {
     private boolean slideWithFlag;      // 是否处于与旗子同步下落阶段
     private int marioFallSpeed;         // 旗子停止后马里奥的加速下落速度
 
-    private int expand = 10;  // 旗帜碰撞箱扩展像素值
+    private final int expand = 10;  // 旗帜碰撞箱扩展像素值
 
     /**
      * 每帧更新触旗过场。

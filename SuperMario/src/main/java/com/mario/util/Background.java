@@ -1,7 +1,7 @@
 package com.mario.util;
 
 import com.mario.entity.scene.Obstacle;
-import com.mario.entity.scene.ObstacleType;
+import com.mario.entity.type.ObstacleType;
 import com.mario.entity.scene.Tower;
 import com.mario.entity.scene.Flagpole;
 import com.mario.entity.scene.Flag;
