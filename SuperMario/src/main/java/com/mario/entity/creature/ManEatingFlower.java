@@ -10,7 +10,7 @@ import com.mario.util.StaticValue;
 public class ManEatingFlower extends Enemy {
     // 运动与动画参数
     private static final int MOVE_RANGE = 30;  // 上下运动范围
-    private static final int MOVE_STEP = 2;  // 运动步长
+    private static final int MOVE_STEP = 1;  // 运动步长
     private static final int LOOP_SLEEP_MS = 50;  // 循环睡眠时间
     private static final int FRAME_SWITCH_TICKS = 6;  // 帧切换时间
 

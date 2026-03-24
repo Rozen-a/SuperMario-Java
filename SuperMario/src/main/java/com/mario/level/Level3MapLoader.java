@@ -1,5 +1,7 @@
 package com.mario.level;
 
+import com.mario.entity.type.ManEatingFlowerSpriteType;
+import com.mario.entity.type.MushroomSpriteType;
 import com.mario.entity.type.ObstacleType;
 import com.mario.util.Background;
 
@@ -48,5 +50,9 @@ public class Level3MapLoader implements LevelMapLoader {
 
         /* 城堡 */
         background.addTower(700, 300);
+
+        /* 敌人 */
+        background.addMushroom(200, 420, true, 180, 300, MushroomSpriteType.STAND);
+        background.addMushroom(360, 420, true, 240, 360, MushroomSpriteType.STAND);
     }
 }

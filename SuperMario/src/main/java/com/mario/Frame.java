@@ -1,6 +1,7 @@
 package com.mario;
 
 import com.mario.entity.creature.Mario;
+import com.mario.entity.creature.Enemy;
 import com.mario.entity.scene.Obstacle;
 import com.mario.entity.scene.Flagpole;
 import com.mario.entity.scene.Tower;
@@ -157,6 +158,13 @@ public class Frame extends JFrame implements KeyListener {
 
         // 绘制当前场景背景
         graphics.drawImage(now_background.getBgImage(), 0, 0, this);
+
+        // 绘制当前场景的敌人
+        for (Enemy enemy : now_background.getEnemyList()) {
+            if (enemy.getShow() != null) {
+                graphics.drawImage(enemy.getShow(), enemy.getX(), enemy.getY(), this);
+            }
+        }
 
         // 在背景上叠加绘制当前场景的所有障碍物
         for (Obstacle obstacle : now_background.getObstacles()) {
