@@ -1,9 +1,8 @@
 package com.mario.entity.type;
 
 /**
- * 马里奥跑动帧类型
- *
- * 往左和往右共用一套帧编号
+ * 马里奥跑动帧类型：
+ * - 往左和往右共用一套帧编号
  */
 public enum MarioRunFrameType {
     FRAME_1(0),

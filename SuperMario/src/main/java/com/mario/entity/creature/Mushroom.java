@@ -57,6 +57,14 @@ public class Mushroom extends Enemy {
         // 标记死亡并切换为压扁帧
         dead = true;
         setShow(StaticValue.mushroom.get(MushroomSpriteType.SQUISHED.getSpriteIndex()));
+        setY(getY() + 15);  // 压扁后调整位置，贴近地面
+    }
+
+    /**
+     * 是否已死亡（用于外部跳过该蘑菇的碰撞检测）
+     */
+    public boolean isDead() {
+        return dead;
     }
 
     @Override
