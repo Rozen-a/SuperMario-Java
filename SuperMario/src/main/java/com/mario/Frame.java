@@ -61,12 +61,9 @@ public class Frame extends JFrame implements KeyListener {
             all_backgrounds.add(new Background(i, i == 3));
         }
 
-        // 设置当前场景
-        now_background = all_backgrounds.get(currentBackgroundIndex);
-
         // 初始化马里奥
         mario = new Mario(MARIO_START_X, MARIO_START_Y);
-        mario.setBackground(now_background);
+        loadLevel(currentBackgroundIndex);
 
         // 启动固定帧重绘：
         // 1) 每隔 30ms 触发一次回调（约 33 FPS），用于持续刷新游戏画面；
@@ -100,16 +97,45 @@ public class Frame extends JFrame implements KeyListener {
             return;
         }
 
-        // 切换到下一关
-        currentBackgroundIndex++;
-        now_background = all_backgrounds.get(currentBackgroundIndex);
+        // 切换到下一关并加载
+        loadLevel(currentBackgroundIndex + 1);
+    }
 
-        // 切关后重置马里奥位置并更新碰撞检测所用场景
+    /**
+     * 重置当前关卡（重新加载场景数据并复位马里奥）
+     */
+    private void resetCurrentLevel() {
+        loadLevel(currentBackgroundIndex);
+    }
+
+    /**
+     * 加载指定关卡并统一复位场景/角色状态
+     *
+     * @param index 关卡索引（0-based）
+     */
+    private void loadLevel(int index) {
+        currentBackgroundIndex = index;
+
+        // 依据当前关卡序号重建背景，恢复障碍/旗子/旗杆初始状态
+        int levelSort = currentBackgroundIndex + 1;
+        boolean isLastLevel = currentBackgroundIndex == all_backgrounds.size() - 1;
+        Background resetBackground = new Background(levelSort, isLastLevel);
+        all_backgrounds.set(currentBackgroundIndex, resetBackground);
+        now_background = resetBackground;
+
+        // 复位马里奥状态
         mario.setX(MARIO_START_X);
         mario.setY(MARIO_START_Y);
-        mario.setBackground(now_background);
-        flagSequence.reset();
+        mario.setXSpeed(0);
+        mario.setYSpeed(0);
+        mario.setLeftPressed(false);
+        mario.setRightPressed(false);
+        mario.setRunPressed(false);
         mario.setScriptedMode(false);
+        mario.setBackground(now_background);
+
+        // 复位触旗过场状态
+        flagSequence.reset();
     }
 
     /**
@@ -189,6 +215,8 @@ public class Frame extends JFrame implements KeyListener {
             mario.setRunPressed(true);
         } else if (code == KeyEvent.VK_UP || code == KeyEvent.VK_SPACE) {
             mario.jump();
+        } else if (code == KeyEvent.VK_R) {
+            resetCurrentLevel();
         }
     }
 
