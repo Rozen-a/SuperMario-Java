@@ -125,4 +125,11 @@ public class FlagSequence {
         finished = false;
         marioFallSpeed = 0;
     }
+
+    /**
+     * 旗子下落流程是否已完成
+     */
+    public boolean isFinished() {
+        return finished;
+    }
 }

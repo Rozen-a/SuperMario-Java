@@ -26,6 +26,8 @@ public class Frame extends JFrame implements KeyListener {
     private int currentBackgroundIndex = 2;  // 当前关卡索引（0-based）
     private Mario mario;  // 马里奥对象
     private Image offScreenImage = null;  // 双缓存
+    private Timer gameTimer;  // 主循环计时器
+    private boolean gameCompleted;  // 是否已通关
     
     private static final int NEXT_LEVEL_TRIGGER_X = 900;  // 触发下一关的 x 阈值
     private static final int MARIO_START_X = 10;  // 切关后马里奥初始 x
@@ -70,13 +72,14 @@ public class Frame extends JFrame implements KeyListener {
         // 1) 每隔 30ms 触发一次回调（约 33 FPS），用于持续刷新游戏画面；
         // 2) 回调中调用 repaint()，会通知 Swing 在合适时机重新执行 paint(...)；
         // 3) 没有这个定时器时，界面通常只在初始化或事件触发时重绘，动画会停在静态帧。
-        Timer timer = new Timer(30, e -> {
+        gameTimer = new Timer(30, e -> {
             switchToNextLevelIfNeeded();
             flagSequence.update(now_background, mario);
+            checkWinCondition();
             repaint();
         });
         // 启动计时器后，回调开始周期性执行，角色移动/跳跃状态才能连续显示出来。
-        timer.start();
+        gameTimer.start();
 
         // 绘制图像
         repaint();
@@ -116,6 +119,7 @@ public class Frame extends JFrame implements KeyListener {
      */
     private void loadLevel(int index) {
         currentBackgroundIndex = index;
+        gameCompleted = false;
 
         // 依据当前关卡序号重建背景，恢复障碍/旗子/旗杆初始状态
         int levelSort = currentBackgroundIndex + 1;
@@ -137,6 +141,47 @@ public class Frame extends JFrame implements KeyListener {
 
         // 复位触旗过场状态
         flagSequence.reset();
+    }
+
+    /**
+     * 检查是否到达城堡中心，满足时停止游戏并提示通关成功
+     */
+    private void checkWinCondition() {
+        if (gameCompleted || mario == null || now_background == null) {
+            return;
+        }
+        // 必须先完成触旗流程（旗子已落下）才允许判定通关
+        if (!flagSequence.isFinished()) {
+            return;
+        }
+
+        // 检查是否到达城堡中心
+        Tower tower = now_background.getTower();
+        if (tower == null || tower.getShow() == null || mario.getShow() == null) {
+            return;
+        }
+
+        // 计算马里奥和城堡中心x坐标
+        int marioCenterX = mario.getX() + mario.getShow().getWidth() / 2;
+        int towerCenterX = tower.getX() + tower.getShow().getWidth() / 2;
+        if (marioCenterX < towerCenterX) {
+            return;
+        }
+
+        // 通关成功，停止游戏并提示通关成功
+        gameCompleted = true;
+        mario.setScriptedMode(true);
+        mario.setLeftPressed(false);
+        mario.setRightPressed(false);
+        mario.setRunPressed(false);
+        mario.setXSpeed(0);
+        mario.setYSpeed(0);
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+        JOptionPane.showMessageDialog(this, "闯关成功");
+        dispose();
+        System.exit(0);
     }
 
     /**
@@ -211,7 +256,7 @@ public class Frame extends JFrame implements KeyListener {
      */
     @Override
     public void keyPressed(KeyEvent e) {
-        if (mario == null) {
+        if (mario == null || gameCompleted) {
             return;
         }
         int code = e.getKeyCode();
@@ -233,7 +278,7 @@ public class Frame extends JFrame implements KeyListener {
      */
     @Override
     public void keyReleased(KeyEvent e) {
-        if (mario == null) {
+        if (mario == null || gameCompleted) {
             return;
         }
         int code = e.getKeyCode();
