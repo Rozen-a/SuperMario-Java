@@ -22,6 +22,8 @@ public class Mario implements Runnable {
     private Background background = new Background();
     // 角色更新线程
     private Thread thread = null;
+    // 脚本模式：true 时暂停常规输入驱动移动逻辑（用于过场动画）
+    private volatile boolean scriptedMode;
 
     // 水平/垂直速度
     private int XSpeed;
@@ -62,7 +64,10 @@ public class Mario implements Runnable {
     @Override
     public void run() {
         while (true) {
-            movementLogic.update(this, collisionDetector);
+            // 如果不在脚本模式下，则更新马里奥的移动逻辑
+            if (!scriptedMode) {
+                movementLogic.update(this, collisionDetector);
+            }
             try {
                 Thread.sleep(30);
             } catch (InterruptedException e) {
@@ -187,5 +192,13 @@ public class Mario implements Runnable {
 
     public void setYSpeed(int YSpeed) {
         this.YSpeed = YSpeed;
+    }
+
+    public boolean isScriptedMode() {
+        return scriptedMode;
+    }
+
+    public void setScriptedMode(boolean scriptedMode) {
+        this.scriptedMode = scriptedMode;
     }
 }

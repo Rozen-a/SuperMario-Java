@@ -4,6 +4,7 @@ import com.mario.entity.scene.Obstacle;
 import com.mario.entity.scene.ObstacleType;
 import com.mario.entity.scene.Tower;
 import com.mario.entity.scene.Flagpole;
+import com.mario.entity.scene.Flag;
 import com.mario.level.Level1MapLoader;
 import com.mario.level.Level2MapLoader;
 import com.mario.level.Level3MapLoader;
@@ -23,6 +24,7 @@ public class Background {
     private List<Obstacle> obstacles = new ArrayList<>();  // 障碍物列表
     private Tower tower = null;
     private Flagpole flagpole = null;
+    private Flag sceneFlag = null;
 
     /**
      * 无参构造
@@ -102,6 +104,16 @@ public class Background {
         this.flagpole = new Flagpole(x, y, this);
     }
 
+    /**
+     * 添加旗子到当前场景
+     *
+     * @param x 旗子 x 坐标
+     * @param y 旗子 y 坐标
+     */
+    public void addFlag(int x, int y) {
+        this.sceneFlag = new Flag(x, y, this);
+    }
+
     public BufferedImage getBgImage() {
         return bgImage;
     }
@@ -148,5 +160,13 @@ public class Background {
 
     public void setFlagpole(Flagpole flagpole) {
         this.flagpole = flagpole;
+    }
+
+    public Flag getFlag() {
+        return sceneFlag;
+    }
+
+    public void setFlag(Flag flag) {
+        this.sceneFlag = flag;
     }
 }

@@ -43,8 +43,8 @@ public class Level3MapLoader implements LevelMapLoader {
 
         /* 旗杆 */
         background.addFlagpole(600, 270);
-        // 添加旗子到旗杆上
-        background.addObstacle(615, 284, ObstacleType.FLAG);
+        // 添加可下落旗子到旗杆上
+        background.addFlag(615, 284);
 
         /* 城堡 */
         background.addTower(700, 300);

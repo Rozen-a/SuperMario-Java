@@ -5,6 +5,8 @@ import com.mario.entity.scene.Obstacle;
 import com.mario.entity.scene.Flagpole;
 import com.mario.entity.scene.Tower;
 import com.mario.util.Background;
+import com.mario.entity.scene.Flag;
+import com.mario.util.FlagSequence;
 import com.mario.util.StaticValue;
 
 import javax.swing.*;
@@ -20,12 +22,15 @@ import java.util.List;
 public class Frame extends JFrame implements KeyListener {
     private List<Background> all_backgrounds = new ArrayList<>();  // 存储所有背景
     private Background now_background = new Background();  // 存储当前背景
-    private int currentBackgroundIndex = 0;  // 当前关卡索引（0-based）
+    private int currentBackgroundIndex = 2;  // 当前关卡索引（0-based）
     private Mario mario;  // 马里奥对象
     private Image offScreenImage = null;  // 双缓存
+    
     private static final int NEXT_LEVEL_TRIGGER_X = 900;  // 触发下一关的 x 阈值
     private static final int MARIO_START_X = 10;  // 切关后马里奥初始 x
     private static final int MARIO_START_Y = 420;  // 切关后马里奥初始 y
+
+    private final FlagSequence flagSequence = new FlagSequence();  // 触旗过场控制器
 
     /**
      * 程序入口
@@ -69,6 +74,7 @@ public class Frame extends JFrame implements KeyListener {
         // 3) 没有这个定时器时，界面通常只在初始化或事件触发时重绘，动画会停在静态帧。
         Timer timer = new Timer(30, e -> {
             switchToNextLevelIfNeeded();
+            flagSequence.update(now_background, mario);
             repaint();
         });
         // 启动计时器后，回调开始周期性执行，角色移动/跳跃状态才能连续显示出来。
@@ -102,6 +108,8 @@ public class Frame extends JFrame implements KeyListener {
         mario.setX(MARIO_START_X);
         mario.setY(MARIO_START_Y);
         mario.setBackground(now_background);
+        flagSequence.reset();
+        mario.setScriptedMode(false);
     }
 
     /**
@@ -133,6 +141,12 @@ public class Frame extends JFrame implements KeyListener {
         Flagpole flagpole = now_background.getFlagpole();
         if (flagpole != null) {
             graphics.drawImage(flagpole.getShow(), flagpole.getX(), flagpole.getY(), this);
+        }
+
+        // 判空绘制旗子（部分关卡可能没有）
+        Flag flag = now_background.getFlag();
+        if (flag != null) {
+            graphics.drawImage(flag.getShow(), flag.getX(), flag.getY(), this);
         }
 
         // 判空绘制城堡（部分关卡可能没有）
