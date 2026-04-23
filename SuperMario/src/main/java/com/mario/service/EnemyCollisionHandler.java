@@ -1,8 +1,10 @@
-package com.mario.util;
+package com.mario.service;
 
 import com.mario.entity.creature.Enemy;
 import com.mario.entity.creature.Mario;
 import com.mario.entity.creature.Mushroom;
+import com.mario.entity.scene.Background;
+import com.mario.controller.GameStateController;
 
 /**
  * 敌人碰撞处理器：

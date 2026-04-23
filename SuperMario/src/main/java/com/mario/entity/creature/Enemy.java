@@ -1,6 +1,6 @@
 package com.mario.entity.creature;
 
-import com.mario.util.Background;
+import com.mario.entity.scene.Background;
 
 import java.awt.image.BufferedImage;
 

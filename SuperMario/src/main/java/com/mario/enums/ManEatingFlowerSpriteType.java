@@ -1,16 +1,15 @@
-package com.mario.entity.type;
+package com.mario.enums;
 
 /**
- * 马里奥跑动帧类型：
- * - 往左和往右共用一套帧编号
+ * 食人花图片类型
  */
-public enum MarioRunFrameType {
+public enum ManEatingFlowerSpriteType {
     FRAME_1(0),
     FRAME_2(1);
 
     private final int spriteIndex;
 
-    MarioRunFrameType(int spriteIndex) {
+    ManEatingFlowerSpriteType(int spriteIndex) {
         this.spriteIndex = spriteIndex;
     }
 

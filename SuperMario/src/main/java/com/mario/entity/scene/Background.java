@@ -1,19 +1,16 @@
-package com.mario.util;
+package com.mario.entity.scene;
 
 import com.mario.entity.creature.Enemy;
 import com.mario.entity.creature.ManEatingFlower;
 import com.mario.entity.creature.Mushroom;
-import com.mario.entity.scene.Obstacle;
-import com.mario.entity.type.ManEatingFlowerSpriteType;
-import com.mario.entity.type.MushroomSpriteType;
-import com.mario.entity.type.ObstacleType;
-import com.mario.entity.scene.Tower;
-import com.mario.entity.scene.Flagpole;
-import com.mario.entity.scene.Flag;
+import com.mario.enums.ManEatingFlowerSpriteType;
+import com.mario.enums.MushroomSpriteType;
+import com.mario.enums.ObstacleType;
 import com.mario.level.Level1MapLoader;
 import com.mario.level.Level2MapLoader;
 import com.mario.level.Level3MapLoader;
 import com.mario.level.LevelMapLoader;
+import com.mario.constant.StaticValue;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

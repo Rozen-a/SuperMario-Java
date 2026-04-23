@@ -1,4 +1,4 @@
-package com.mario.entity.type;
+package com.mario.enums;
 
 /**
  * 障碍物类型

@@ -1,6 +1,6 @@
 package com.mario.level;
 
-import com.mario.util.Background;
+import com.mario.entity.scene.Background;
 
 /**
  * 关卡地图加载器

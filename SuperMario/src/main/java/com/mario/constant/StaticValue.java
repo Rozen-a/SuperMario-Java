@@ -1,4 +1,4 @@
-package com.mario.util;
+package com.mario.constant;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

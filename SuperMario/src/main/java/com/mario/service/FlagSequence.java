@@ -1,7 +1,8 @@
-package com.mario.util;
+package com.mario.service;
 
 import com.mario.entity.creature.Mario;
 import com.mario.entity.scene.Flag;
+import com.mario.entity.scene.Background;
 
 /**
  * 触旗过场控制器：

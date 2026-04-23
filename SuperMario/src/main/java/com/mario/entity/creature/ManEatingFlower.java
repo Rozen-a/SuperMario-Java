@@ -1,8 +1,8 @@
 package com.mario.entity.creature;
 
-import com.mario.entity.type.ManEatingFlowerSpriteType;
-import com.mario.util.Background;
-import com.mario.util.StaticValue;
+import com.mario.enums.ManEatingFlowerSpriteType;
+import com.mario.entity.scene.Background;
+import com.mario.constant.StaticValue;
 
 /**
  * 食人花敌人：在固定纵向区间内上下往返，并循环播放两帧动画

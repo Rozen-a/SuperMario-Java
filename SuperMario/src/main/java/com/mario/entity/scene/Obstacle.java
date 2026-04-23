@@ -1,8 +1,7 @@
 package com.mario.entity.scene;
 
-import com.mario.entity.type.ObstacleType;
-import com.mario.util.Background;
-import com.mario.util.StaticValue;
+import com.mario.enums.ObstacleType;
+import com.mario.constant.StaticValue;
 
 import java.awt.image.BufferedImage;
 

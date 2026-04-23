@@ -1,7 +1,6 @@
 package com.mario.entity.scene;
 
-import com.mario.util.Background;
-import com.mario.util.StaticValue;
+import com.mario.constant.StaticValue;
 
 import java.awt.image.BufferedImage;
 

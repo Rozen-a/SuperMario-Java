@@ -1,8 +1,8 @@
 package com.mario.level;
 
-import com.mario.entity.type.MushroomSpriteType;
-import com.mario.entity.type.ObstacleType;
-import com.mario.util.Background;
+import com.mario.enums.MushroomSpriteType;
+import com.mario.enums.ObstacleType;
+import com.mario.entity.scene.Background;
 
 /**
  * 第三关地图

@@ -1,4 +1,4 @@
-package com.mario.entity.type;
+package com.mario.enums;
 
 /**
  * 蘑菇敌人图片类型

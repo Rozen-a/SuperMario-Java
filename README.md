@@ -32,15 +32,15 @@
 ```text
 SuperMario/
 ├── src/main/java/com/mario/
+│   ├── constant/           # 静态资源与常量 (StaticValue)
+│   ├── controller/         # 游戏流程控制 (GameStateController)
 │   ├── entity/             # 游戏实体
 │   │   ├── creature/       # 生物类 (Mario, Enemy, Mushroom, etc.)
-│   │   ├── scene/          # 场景元素 (Obstacle, Pipe, Flag, etc.)
-│   │   └── type/           # 枚举与类型定义
-│   ├── level/              # 关卡地图加载器
-│   ├── util/               # 工具类与核心组件
-│   │   ├── MusicPlayer     # 音频控制
-│   │   ├── CollisionHandler# 碰撞处理
-│   │   └── StaticValue     # 静态资源初始化
+│   │   └── scene/          # 场景元素 (Background, Obstacle, Flag, etc.)
+│   ├── enums/              # 枚举类型定义 (ObstacleType, SpriteType, etc.)
+│   ├── level/              # 关卡地图加载器 (LevelMapLoader)
+│   ├── service/            # 核心业务逻辑 (碰撞处理、移动算法、过场动画)
+│   ├── util/               # 通用工具类 (MusicPlayer)
 │   └── Frame.java          # 游戏主窗口与入口
 └── src/main/resources/     # 外部资源 (Images, Music)
 ```

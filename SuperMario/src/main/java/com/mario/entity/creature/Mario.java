@@ -1,9 +1,9 @@
 package com.mario.entity.creature;
 
-import com.mario.util.Background;
-import com.mario.util.MarioCollisionDetector;
-import com.mario.util.MarioMovementLogic;
-import com.mario.util.StaticValue;
+import com.mario.entity.scene.Background;
+import com.mario.service.MarioCollisionDetector;
+import com.mario.service.MarioMovementLogic;
+import com.mario.constant.StaticValue;
 
 import java.awt.image.BufferedImage;
 
@@ -28,6 +28,9 @@ public class Mario implements Runnable {
     // 水平/垂直速度
     private int XSpeed;
     private int YSpeed;
+
+    // 表示积分
+    private int score = 0;
 
     // 将移动逻辑与碰撞检测解耦到独立组件
     private final MarioMovementLogic movementLogic;

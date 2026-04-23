@@ -1,7 +1,10 @@
-package com.mario.util;
+package com.mario.controller;
 
 import com.mario.entity.creature.Mario;
 import com.mario.entity.scene.Tower;
+import com.mario.entity.scene.Background;
+import com.mario.service.FlagSequence;
+import com.mario.util.MusicPlayer;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;

@@ -1,6 +1,7 @@
-package com.mario.util;
+package com.mario.service;
 
 import com.mario.entity.scene.Obstacle;
+import com.mario.entity.scene.Background;
 
 import java.util.List;
 

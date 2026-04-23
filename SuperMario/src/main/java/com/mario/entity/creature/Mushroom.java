@@ -1,8 +1,8 @@
 package com.mario.entity.creature;
 
-import com.mario.entity.type.MushroomSpriteType;
-import com.mario.util.Background;
-import com.mario.util.StaticValue;
+import com.mario.enums.MushroomSpriteType;
+import com.mario.entity.scene.Background;
+import com.mario.constant.StaticValue;
 
 /**
  * 蘑菇敌人：在固定水平范围内往返移动，移动时播放行走帧，到边界后短暂停顿。

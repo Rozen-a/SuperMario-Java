@@ -1,6 +1,7 @@
-package com.mario.util;
+package com.mario.service;
 
 import com.mario.entity.creature.Mario;
+import com.mario.constant.StaticValue;
 
 /**
  * 马里奥移动逻辑（移动、奔跑、跳跃、下落）
