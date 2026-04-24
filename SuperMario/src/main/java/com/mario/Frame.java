@@ -25,7 +25,7 @@ import java.util.List;
 public class Frame extends JFrame implements KeyListener {
     private List<Background> all_backgrounds = new ArrayList<>();  // 存储所有背景
     private Background now_background = new Background();  // 存储当前背景
-    private int currentBackgroundIndex = 0;  // 当前关卡索引（0-based）
+    private int currentBackgroundIndex = 2;  // 当前关卡索引（0-based）
     private Mario mario;  // 马里奥对象
     private Image offScreenImage = null;  // 双缓存
     private Timer gameTimer;  // 主循环计时器（用于统一暂停/结束游戏）
@@ -145,11 +145,7 @@ public class Frame extends JFrame implements KeyListener {
         // 复位马里奥状态
         mario.setX(MARIO_START_X);
         mario.setY(MARIO_START_Y);
-        mario.setXSpeed(0);
-        mario.setYSpeed(0);
-        mario.setLeftPressed(false);
-        mario.setRightPressed(false);
-        mario.setRunPressed(false);
+        mario.resetMotionState();
         mario.setScriptedMode(false);
         mario.setBackground(now_background);
 

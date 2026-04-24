@@ -41,14 +41,23 @@ public class GameStateController {
         this.gameTimer = gameTimer;
     }
 
+    /**
+     * 检查游戏是否已达成通关。
+     */
     public boolean isGameCompleted() {
         return gameCompleted;
     }
 
+    /**
+     * 检查游戏是否已触发失败。
+     */
     public boolean isGameOver() {
         return gameOver;
     }
 
+    /**
+     * 检查游戏是否已结束（通关/失败）。
+     */
     public boolean isGameEnded() {
         return gameCompleted || gameOver;
     }
@@ -81,13 +90,26 @@ public class GameStateController {
             return;
         }
 
-        // 马里奥中心点到达/超过城堡中心点即判定通关
+        // 马里奥中心点在城堡门内即判定通关
+        // 城堡门的范围为：
+        // x 轴：(城堡中心点 - 15, 城堡中心点 + 15)
+        // y 轴：(城堡最低点 -45, 城堡最低点)
         int marioCenterX = mario.getX() + mario.getShow().getWidth() / 2;
+        int marioCenterY = mario.getY() + mario.getShow().getHeight() / 2;
         int towerCenterX = tower.getX() + tower.getShow().getWidth() / 2;
-        if (marioCenterX < towerCenterX) {
+        int towerBottomY = tower.getY() + tower.getShow().getHeight();
+        // System.out.println("marioCenterX: " + marioCenterX);
+        // System.out.println("marioCenterY: " + marioCenterY);
+        // System.out.println("towerCenterX: " + towerCenterX);
+        // System.out.println("towerBottomY: " + towerBottomY);
+        // 防止马里奥贴图在门中的部分过小，缩小判定范围
+        if (marioCenterX < towerCenterX - 5 || marioCenterX > towerCenterX + 5) {
             return;
         }
-
+        if (marioCenterY < towerBottomY - 40 || marioCenterY > towerBottomY) {
+            return;
+        }
+        
         gameCompleted = true;
         MusicPlayer.playBGM("Win");
         stopAndExit("闯关成功");
@@ -128,10 +150,6 @@ public class GameStateController {
             return;
         }
         mario.setScriptedMode(true);
-        mario.setLeftPressed(false);
-        mario.setRightPressed(false);
-        mario.setRunPressed(false);
-        mario.setXSpeed(0);
-        mario.setYSpeed(0);
+        mario.resetMotionState();
     }
 }

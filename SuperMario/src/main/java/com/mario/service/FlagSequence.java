@@ -47,11 +47,7 @@ public class FlagSequence {
             marioFallSpeed = 0;
             // 进入脚本模式并清空当前速度/输入
             mario.setScriptedMode(true);
-            mario.setLeftPressed(false);
-            mario.setRightPressed(false);
-            mario.setRunPressed(false);
-            mario.setXSpeed(0);
-            mario.setYSpeed(0);
+            mario.resetMotionState();
         }
         if (!running) {
             return;

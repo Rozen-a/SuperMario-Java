@@ -72,6 +72,7 @@ public class Mario implements Runnable {
                 movementLogic.update(this, collisionDetector);
             }
             try {
+                // 每次循环后暂停 30ms，保持固定帧率
                 Thread.sleep(30);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -112,6 +113,17 @@ public class Mario implements Runnable {
      */
     public void jump() {
         movementLogic.jump(this, collisionDetector);
+    }
+
+    /**
+     * 复位输入与速度状态
+     */
+    public void resetMotionState() {
+        setLeftPressed(false);
+        setRightPressed(false);
+        setRunPressed(false);
+        setXSpeed(0);
+        setYSpeed(0);
     }
 
     /**
@@ -203,5 +215,13 @@ public class Mario implements Runnable {
 
     public void setScriptedMode(boolean scriptedMode) {
         this.scriptedMode = scriptedMode;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }

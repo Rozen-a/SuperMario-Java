@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 静态变量类
+ * 静态变量类：
+ * 加载图片资源
  */
 public class StaticValue {
     // 背景

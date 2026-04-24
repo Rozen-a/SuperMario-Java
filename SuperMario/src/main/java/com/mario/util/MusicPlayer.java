@@ -44,7 +44,7 @@ public class MusicPlayer {
 
             // 部分音频解码器对 mark/reset 有依赖，先包一层缓冲流更稳妥
             try (BufferedInputStream bufferedIn = new BufferedInputStream(inputStream);
-                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn)) {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(bufferedIn)) {
                 Clip clip = AudioSystem.getClip();
                 clip.open(audioStream);
 
