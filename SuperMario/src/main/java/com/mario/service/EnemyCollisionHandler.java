@@ -48,6 +48,8 @@ public class EnemyCollisionHandler {
             int enemyY = enemy.getY();
             int enemyW = enemy.getShow().getWidth();
             int enemyH = enemy.getShow().getHeight();
+
+            // 检查是否发生碰撞
             if (!isRectOverlap(marioX, marioY, marioW, marioH, enemyX, enemyY, enemyW, enemyH)) {
                 continue;
             }

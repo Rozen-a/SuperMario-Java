@@ -18,7 +18,7 @@ public class ManEatingFlower extends Enemy {
     // 上下运动边界（topLimitY <= y <= bottomLimitY）
     private int topLimitY;
     private int bottomLimitY;
-    // 当前是否向上移动
+    // 当前是否向上移动，为true时向上移动，为false时向下移动，初始值为true，确保在顶部开始移动
     private boolean movingUp = true;
     // 触底后的停顿计时
     private int bottomPauseTick;

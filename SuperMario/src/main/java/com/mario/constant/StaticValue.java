@@ -16,6 +16,10 @@ public class StaticValue {
     // 背景
     public static BufferedImage background1 = null;
     public static BufferedImage background2 = null;
+    public static BufferedImage Start_background = null;
+
+    // Logo
+    public static BufferedImage logo = null;
 
     // 马里奥动作
     public static BufferedImage mario_jump_L = null;
@@ -74,6 +78,11 @@ public class StaticValue {
         // 加载背景图片
         background1 = loadImage("bg1.png");
         background2 = loadImage("bg2.png");
+        Start_background = loadImage("Start_bg.png");
+
+        // 加载Logo图片
+        logo = loadImage("logo.png");
+
 
         // 加载马里奥动作图片
         mario_jump_L = loadImage("mario_jump_L.png");

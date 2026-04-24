@@ -11,11 +11,16 @@ import com.mario.controller.GameStateController;
 import com.mario.constant.StaticValue;
 import com.mario.util.MusicPlayer;
 import com.mario.entity.scene.Flag;
+import com.mario.ui.StartScreen;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,10 +30,11 @@ import java.util.List;
 public class Frame extends JFrame implements KeyListener {
     private List<Background> all_backgrounds = new ArrayList<>();  // 存储所有背景
     private Background now_background = new Background();  // 存储当前背景
-    private int currentBackgroundIndex = 2;  // 当前关卡索引（0-based）
+    private int currentBackgroundIndex = 0;  // 当前关卡索引（0-based）
     private Mario mario;  // 马里奥对象
     private Image offScreenImage = null;  // 双缓存
     private Timer gameTimer;  // 主循环计时器（用于统一暂停/结束游戏）
+    private final StartScreen startScreen = new StartScreen();  // 开始界面
     
     private static final int NEXT_LEVEL_TRIGGER_X = 900;  // 触发下一关的 x 阈值
     private static final int MARIO_START_X = 10;  // 切关后马里奥初始 x
@@ -53,10 +59,23 @@ public class Frame extends JFrame implements KeyListener {
     public Frame() {
         this.setSize(900, 600);  // 窗口大小设置
         this.setLocationRelativeTo(null);  // 窗口居中显示
-        this.setVisible(true);  // 窗口可见性
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // 关闭窗口时结束程序
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // 统一接管关闭逻辑
         this.setResizable(false);  // 窗口大小不可变
         this.addKeyListener(this);  // 添加键盘监听
+        // 添加鼠标点击监听
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleMouseClick(e.getX(), e.getY());
+            }
+        });
+        // 添加窗口关闭监听
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                exitGame();
+            }
+        });
         this.setTitle("超级玛丽 SuperMario");  // 设置窗口名称
 
         // 初始化所有图片
@@ -72,13 +91,15 @@ public class Frame extends JFrame implements KeyListener {
         enemyCollisionHandler = new EnemyCollisionHandler();
         gameStateController = new GameStateController(this, mario);
 
-        loadLevel(currentBackgroundIndex);
-
         // 启动固定帧重绘：
         // 1) 每隔 30ms 触发一次回调（约 33 FPS），用于持续刷新游戏画面；
         // 2) 回调中调用 repaint()，会通知 Swing 在合适时机重新执行 paint(...)；
         // 3) 没有这个定时器时，界面通常只在初始化或事件触发时重绘，动画会停在静态帧。
         gameTimer = new Timer(30, e -> {
+            if (startScreen.isVisible()) {
+                repaint();
+                return;
+            }
             // 统一在主循环里推进关卡切换、过场、碰撞判定与渲染
             switchToNextLevelIfNeeded();
             flagSequence.update(now_background, mario);
@@ -90,11 +111,10 @@ public class Frame extends JFrame implements KeyListener {
         // 启动计时器后，回调开始周期性执行，角色移动/跳跃状态才能连续显示出来。
         gameTimer.start();
 
+        this.setVisible(true);  // 资源和状态初始化完成后再显示窗口
+
         // 绘制图像
         repaint();
-
-        // 初始化时开始播放 bgm
-        MusicPlayer.playBGM("Ground");
     }
 
     /**
@@ -124,6 +144,49 @@ public class Frame extends JFrame implements KeyListener {
         loadLevel(currentBackgroundIndex);
         // 重置关卡时重新播放 bgm
         MusicPlayer.playBGM("Ground");
+    }
+
+    /**
+     * 从开始界面进入关卡
+     */
+    private void startGame() {
+        startScreen.hide();
+        loadLevel(currentBackgroundIndex);
+        MusicPlayer.playBGM("Ground");
+        requestFocusInWindow();  // 确保窗口获得焦点，响应键盘输入
+        repaint();
+    }
+
+    /**
+     * 处理菜单界面的鼠标点击。
+     *
+     * @param mouseX 鼠标 x 坐标
+     * @param mouseY 鼠标 y 坐标
+     */
+    private void handleMouseClick(int mouseX, int mouseY) {
+        StartScreen.Action action = startScreen.handleClick(mouseX, mouseY);
+        if (action == StartScreen.Action.START_GAME) {
+            startGame();
+            return;
+        }
+        if (action == StartScreen.Action.EXIT_GAME) {
+            exitGame();
+            return;
+        }
+        if (action == StartScreen.Action.REPAINT) {
+            repaint();
+        }
+    }
+
+    /**
+     * 统一退出游戏，确保窗口关闭时进程同时结束。
+     */
+    private void exitGame() {
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+        dispose();  // 关闭窗口，释放资源
+        System.exit(0);
     }
 
     /**
@@ -169,7 +232,21 @@ public class Frame extends JFrame implements KeyListener {
         Graphics graphics = offScreenImage.getGraphics();
         // 每帧先清空画布，避免残影
         graphics.fillRect(0, 0, 900, 600);
+        if (startScreen.isVisible()) {
+            startScreen.draw(graphics, this);
+        } else {
+            drawGameScreen(graphics);
+        }
 
+        // 将离屏画布整体绘制到窗口
+        g.drawImage(offScreenImage, 0, 0, this);
+        graphics.dispose();
+    }
+
+    /**
+     * 绘制游戏运行界面。
+     */
+    private void drawGameScreen(Graphics graphics) {
         // 绘制当前场景背景
         graphics.drawImage(now_background.getBgImage(), 0, 0, this);
 
@@ -207,9 +284,6 @@ public class Frame extends JFrame implements KeyListener {
         if (mario != null) {
             graphics.drawImage(mario.getShow(), mario.getX(), mario.getY(), this);
         }
-
-        // 将离屏画布整体绘制到窗口
-        g.drawImage(offScreenImage, 0, 0, this);
     }
 
     /**
@@ -225,7 +299,7 @@ public class Frame extends JFrame implements KeyListener {
      */
     @Override
     public void keyPressed(KeyEvent e) {
-        if (mario == null || gameStateController.isGameEnded()) {
+        if (startScreen.isVisible() || mario == null || gameStateController.isGameEnded()) {
             return;
         }
         int code = e.getKeyCode();
@@ -247,7 +321,7 @@ public class Frame extends JFrame implements KeyListener {
      */
     @Override
     public void keyReleased(KeyEvent e) {
-        if (mario == null || gameStateController.isGameEnded()) {
+        if (startScreen.isVisible() || mario == null || gameStateController.isGameEnded()) {
             return;
         }
         int code = e.getKeyCode();

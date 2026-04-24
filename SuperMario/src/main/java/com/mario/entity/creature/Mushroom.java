@@ -52,6 +52,9 @@ public class Mushroom extends Enemy {
         this.initialized = true;  
     }
 
+    /**
+     * 蘑菇敌人死亡逻辑：切换为压扁帧，调整位置，标记为死亡。
+     */
     @Override
     public void death() {
         // 标记死亡并切换为压扁帧
@@ -67,6 +70,9 @@ public class Mushroom extends Enemy {
         return dead;
     }
 
+    /**
+     * 蘑菇敌人移动逻辑：根据当前方向和边界条件，循环移动。
+     */
     @Override
     public void run() {
         // 等待构造完成，避免线程先于边界初始化执行
@@ -116,6 +122,7 @@ public class Mushroom extends Enemy {
             }
 
             try {
+                // 每次循环后暂停，保持动画同步
                 Thread.sleep(LOOP_SLEEP_MS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
