@@ -1,7 +1,10 @@
 package com.mario.service;
 
+import com.mario.entity.creature.Mario;
 import com.mario.entity.scene.Obstacle;
 import com.mario.entity.scene.Background;
+import com.mario.enums.ObstacleType;
+import com.mario.util.MusicPlayer;
 
 import java.util.List;
 
@@ -66,7 +69,7 @@ public class MarioCollisionDetector {
         int targetY = y + offsetY;
         // 目标点无碰撞，直接到达
         if (canStayAt(x, targetY)) {
-            return new VerticalMoveResult(targetY, true);
+            return new VerticalMoveResult(targetY, true, null);
         }
 
         // 发生碰撞时逐像素逼近，停在障碍物边缘
@@ -79,7 +82,38 @@ public class MarioCollisionDetector {
             }
             current = next;
         }
-        return new VerticalMoveResult(current, current != y);
+        return new VerticalMoveResult(current, current != y, findFirstCollidingObstacle(x, current + step));
+    }
+
+    /**
+     * 处理马里奥头顶碰到可破坏方块
+     *
+     * @param mario 马里奥对象
+     * @param verticalResult 垂直位移结果
+     */
+    public void handleHeadHit(Mario mario, VerticalMoveResult verticalResult) {
+        // 检查参数是否为空
+        if (mario == null || verticalResult == null) {
+            return;
+        }
+        // 只有跳跃上升阶段顶到头部障碍时，才允许破坏可破坏方块。
+        if (mario.getYSpeed() >= 0) {
+            return;
+        }
+        // 检查是否碰到可破坏方块
+        Obstacle obstacle = verticalResult.getBlockedObstacle();
+        if (obstacle == null || obstacle.getType() != ObstacleType.BREAKABLE_BLOCK) {
+            return;
+        }
+        // 从背景中移除该可破坏方块，增加分数
+        List<Obstacle> obstacles = background == null ? null : background.getObstacles();
+        if (obstacles == null) {
+            return;
+        }
+        if (obstacles.remove(obstacle)) {
+            MusicPlayer.playSound("BreakBlock");
+            mario.addScore(1);
+        }
     }
 
     /**
@@ -102,27 +136,56 @@ public class MarioCollisionDetector {
      * @return true 表示可站立，false 表示发生碰撞
      */
     private boolean canStayAt(int targetX, int targetY) {
+        return findFirstCollidingObstacle(targetX, targetY) == null;
+    }
+
+    /**
+     * 查找与目标位置发生重叠的第一个障碍物
+     * 
+     * @param targetX 目标 x 坐标
+     * @param targetY 目标 y 坐标
+     * @return 第一个重叠障碍物；若不存在则返回 null
+     */
+    private Obstacle findFirstCollidingObstacle(int targetX, int targetY) {
+        return findFirstOverlappingObstacle(targetX, targetY, DEFAULT_MARIO_WIDTH, DEFAULT_MARIO_HEIGHT);
+    }
+
+    /**
+     * 查找与指定矩形发生重叠的第一个障碍物
+     *
+     * @param targetX 目标矩形左上角 x 坐标
+     * @param targetY 目标矩形左上角 y 坐标
+     * @param targetWidth 目标矩形宽度
+     * @param targetHeight 目标矩形高度
+     * @return 第一个重叠障碍物；若不存在则返回 null
+     */
+    private Obstacle findFirstOverlappingObstacle(int targetX, int targetY, int targetWidth, int targetHeight) {
         // 背景或障碍物为空时，无碰撞
-        List<Obstacle> obstacles = background == null ? null : background.getObstacles();
-        if (obstacles == null || obstacles.isEmpty()) {
-            return true;
+        if (background == null) {
+            return null;
         }
+        List<Obstacle> obstacles = background.getObstacles();
+        if (obstacles == null || obstacles.isEmpty()) {
+            return null;
+        }
+
+        // 遍历所有障碍物，查找与目标位置重叠的第一个障碍物
         for (Obstacle obstacle : obstacles) {
+            // 跳过无效障碍物
             if (obstacle == null || obstacle.getShow() == null) {
                 continue;
             }
-            // 获取障碍物的坐标、宽度和高度
             int obstacleX = obstacle.getX();
             int obstacleY = obstacle.getY();
             int obstacleWidth = obstacle.getShow().getWidth();
             int obstacleHeight = obstacle.getShow().getHeight();
-            // 与任意障碍物重叠都判定为不可站立
-            if (isRectOverlap(targetX, targetY, DEFAULT_MARIO_WIDTH, DEFAULT_MARIO_HEIGHT,
+            // 检查目标位置是否与障碍物重叠
+            if (isRectOverlap(targetX, targetY, targetWidth, targetHeight,
                     obstacleX, obstacleY, obstacleWidth, obstacleHeight)) {
-                return false;
+                return obstacle;  // 返回第一个重叠的障碍物
             }
         }
-        return true;
+        return null;
     }
 
     /**
@@ -136,34 +199,5 @@ public class MarioCollisionDetector {
         // 两个矩形在 x 轴方向有交集：x1 的左边在 x2 的右边左侧，且 x1 的右边在 x2 的左边右侧
         // 两个矩形在 y 轴方向有交集：y1 的上边在 y2 的下边上侧，且 y1 的下边在 y2 的上边下侧
         return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
-    }
-
-    /**
-     * 垂直位移解析结果
-     * 
-     * 用于同时返回垂直方向的新坐标以及本帧是否发生实际位移
-     */
-    public static class VerticalMoveResult {
-        private final int y;  // 解析后的 y 坐标
-        private final boolean moved;  // 本次垂直位移是否实际发生
-
-        /**
-         * 创建垂直位移解析结果
-         *
-         * @param y 解析后的 y 坐标
-         * @param moved 是否发生实际位移
-         */
-        public VerticalMoveResult(int y, boolean moved) {
-            this.y = y;
-            this.moved = moved;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public boolean isMoved() {
-            return moved;
-        }
     }
 }

@@ -11,6 +11,7 @@ import com.mario.controller.GameStateController;
 import com.mario.constant.StaticValue;
 import com.mario.util.MusicPlayer;
 import com.mario.entity.scene.Flag;
+import com.mario.ui.GameUiRenderer;
 import com.mario.ui.StartScreen;
 
 import javax.swing.*;
@@ -35,6 +36,8 @@ public class Frame extends JFrame implements KeyListener {
     private Image offScreenImage = null;  // 双缓存
     private Timer gameTimer;  // 主循环计时器（用于统一暂停/结束游戏）
     private final StartScreen startScreen = new StartScreen();  // 开始界面
+    private final GameUiRenderer gameUiRenderer = new GameUiRenderer();  // 游戏运行时顶部 UI 绘制器
+    private int currentLevelStartScore = 0;  // 当前关卡的起始积分
     
     private static final int NEXT_LEVEL_TRIGGER_X = 900;  // 触发下一关的 x 阈值
     private static final int MARIO_START_X = 10;  // 切关后马里奥初始 x
@@ -115,6 +118,9 @@ public class Frame extends JFrame implements KeyListener {
 
         // 绘制图像
         repaint();
+
+        // 打开游戏时播放背景音乐
+        MusicPlayer.playBGM("Ground");
     }
 
     /**
@@ -134,6 +140,7 @@ public class Frame extends JFrame implements KeyListener {
         }
 
         // 切换到下一关并加载
+        currentLevelStartScore = mario.getScore();
         loadLevel(currentBackgroundIndex + 1);
     }
 
@@ -151,6 +158,8 @@ public class Frame extends JFrame implements KeyListener {
      */
     private void startGame() {
         startScreen.hide();
+        currentBackgroundIndex = 0;
+        currentLevelStartScore = 0;
         loadLevel(currentBackgroundIndex);
         MusicPlayer.playBGM("Ground");
         requestFocusInWindow();  // 确保窗口获得焦点，响应键盘输入
@@ -209,6 +218,7 @@ public class Frame extends JFrame implements KeyListener {
         mario.setX(MARIO_START_X);
         mario.setY(MARIO_START_Y);
         mario.resetMotionState();
+        mario.setScore(currentLevelStartScore);
         mario.setScriptedMode(false);
         mario.setBackground(now_background);
 
@@ -251,14 +261,14 @@ public class Frame extends JFrame implements KeyListener {
         graphics.drawImage(now_background.getBgImage(), 0, 0, this);
 
         // 绘制当前场景的敌人
-        for (Enemy enemy : now_background.getEnemyList()) {
+        for (Enemy enemy : new ArrayList<>(now_background.getEnemyList())) {
             if (enemy.getShow() != null) {
                 graphics.drawImage(enemy.getShow(), enemy.getX(), enemy.getY(), this);
             }
         }
 
         // 在背景上叠加绘制当前场景的所有障碍物
-        for (Obstacle obstacle : now_background.getObstacles()) {
+        for (Obstacle obstacle : new ArrayList<>(now_background.getObstacles())) {
             graphics.drawImage(obstacle.getShow(), obstacle.getX(), obstacle.getY(), this);
         }
 
@@ -284,6 +294,9 @@ public class Frame extends JFrame implements KeyListener {
         if (mario != null) {
             graphics.drawImage(mario.getShow(), mario.getX(), mario.getY(), this);
         }
+
+        // 顶部 HUD 统一交给独立的 UI 绘制器处理。
+        gameUiRenderer.draw(graphics, mario);
     }
 
     /**

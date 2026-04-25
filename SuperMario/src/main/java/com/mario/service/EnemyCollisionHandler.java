@@ -5,6 +5,9 @@ import com.mario.entity.creature.Mario;
 import com.mario.entity.creature.Mushroom;
 import com.mario.entity.scene.Background;
 import com.mario.controller.GameStateController;
+import com.mario.util.MusicPlayer;
+
+
 
 /**
  * 敌人碰撞处理器：
@@ -59,8 +62,10 @@ public class EnemyCollisionHandler {
                     && mario.getYSpeed() > 0
                     && marioBottom <= enemyY + 12;
             if (stompOnTop) {
-                // 踩中后消灭蘑菇，并给马里奥一个向上回弹
+                // 踩中后消灭蘑菇，并给马里奥一个向上回弹，积分加2
                 enemy.death();
+                MusicPlayer.playSound("EnemyDeath");
+                mario.addScore(2);
                 mario.setY(enemyY - marioH);
                 mario.setYSpeed(-10);
                 return;

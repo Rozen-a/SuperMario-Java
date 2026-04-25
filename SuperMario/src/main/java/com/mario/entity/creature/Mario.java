@@ -143,6 +143,15 @@ public class Mario implements Runnable {
         status = "stand-right";
         show = StaticValue.mario_stand_R;
     }
+    
+    /**
+     * 增加积分。
+     *
+     * @param delta 增加的分值
+     */
+    public void addScore(int delta) {
+        score += delta;
+    }
 
     public int getX() {
         return x;

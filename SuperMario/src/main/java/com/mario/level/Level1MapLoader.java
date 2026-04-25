@@ -47,6 +47,12 @@ public class Level1MapLoader implements LevelMapLoader {
         // unbreakable*1
         background.addObstacle(360, 330, ObstacleType.UNBREAKABLE_BLOCK);
 
+        // unbreakable*1
+        background.addObstacle(450, 390, ObstacleType.UNBREAKABLE_BLOCK);
+
+        // unbreakable*1
+        background.addObstacle(600, 390, ObstacleType.UNBREAKABLE_BLOCK);
+
         // breakable*2 + unbreakable*3 + breakable*1 + unbreakable*3 + breakable*1
         for (int i = 0; i < 2; i++) {
             background.addObstacle(420 + i * 30, 300, ObstacleType.BREAKABLE_BLOCK);

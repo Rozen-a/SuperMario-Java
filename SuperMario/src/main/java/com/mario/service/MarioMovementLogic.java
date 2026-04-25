@@ -2,6 +2,7 @@ package com.mario.service;
 
 import com.mario.entity.creature.Mario;
 import com.mario.constant.StaticValue;
+import com.mario.util.MusicPlayer;
 
 /**
  * 马里奥移动逻辑（移动、奔跑、跳跃、下落）
@@ -85,6 +86,7 @@ public class MarioMovementLogic {
     public void jump(Mario mario, MarioCollisionDetector detector) {
         // 仅允许在地面或站在障碍物上时起跳
         if (!jumping && (mario.getY() >= GROUND_Y || detector.isStandingOnObstacle(mario.getX(), mario.getY()))) {
+            MusicPlayer.playSound("Jump");
             jumping = true;
             jumpFrame = 0;
             mario.setStatus(faceRight ? "jump-right" : "jump-left");
@@ -170,8 +172,7 @@ public class MarioMovementLogic {
             // 上升阶段：向上移动，撞到障碍时提前结束上升
             mario.setYSpeed(-JUMP_SPEED);
             // 解析垂直移动后的可达位置及移动结果
-            MarioCollisionDetector.VerticalMoveResult result =
-                    detector.resolveVerticalMove(mario.getX(), mario.getY(), mario.getYSpeed());
+            VerticalMoveResult result = detector.resolveVerticalMove(mario.getX(), mario.getY(), mario.getYSpeed());
             mario.setY(result.getY());
             
             if (result.isMoved()) {
@@ -182,6 +183,7 @@ public class MarioMovementLogic {
                 mario.setShow(faceRight ? StaticValue.mario_jump_R : StaticValue.mario_jump_L);
             } else {
                 // 如果跳跃被障碍阻挡，则结束跳跃
+                detector.handleHeadHit(mario, result);
                 jumping = false;
                 mario.setYSpeed(0);
                 jumpFrame = JUMP_MAX_FRAME;
@@ -195,8 +197,7 @@ public class MarioMovementLogic {
             // 空中且脚下无支撑时应用重力
             mario.setYSpeed(GRAVITY);
             // 解析垂直移动后的可达位置及移动结果
-            MarioCollisionDetector.VerticalMoveResult result =
-                    detector.resolveVerticalMove(mario.getX(), mario.getY(), mario.getYSpeed());
+            VerticalMoveResult result = detector.resolveVerticalMove(mario.getX(), mario.getY(), mario.getYSpeed());
             // 更新马里奥的纵坐标
             mario.setY(result.getY());
             // 如果本帧成功向下移动，则更新状态与贴图
