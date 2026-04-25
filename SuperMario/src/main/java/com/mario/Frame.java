@@ -408,13 +408,13 @@ public class Frame extends JFrame implements KeyListener {
             return;
         }
         int code = e.getKeyCode();
-        if (code == KeyEvent.VK_LEFT) {
+        if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) {
             mario.setLeftPressed(true);
-        } else if (code == KeyEvent.VK_RIGHT) {
+        } else if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) {
             mario.setRightPressed(true);
         } else if (code == KeyEvent.VK_SHIFT) {
             mario.setRunPressed(true);
-        } else if (code == KeyEvent.VK_UP || code == KeyEvent.VK_SPACE) {
+        } else if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W || code == KeyEvent.VK_SPACE) {
             mario.jump();
         } else if (code == KeyEvent.VK_R) {
             resetCurrentLevel();
@@ -430,9 +430,9 @@ public class Frame extends JFrame implements KeyListener {
             return;
         }
         int code = e.getKeyCode();
-        if (code == KeyEvent.VK_LEFT) {
+        if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) {
             mario.setLeftPressed(false);
-        } else if (code == KeyEvent.VK_RIGHT) {
+        } else if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) {
             mario.setRightPressed(false);
         } else if (code == KeyEvent.VK_SHIFT) {
             mario.setRunPressed(false);

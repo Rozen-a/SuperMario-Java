@@ -34,7 +34,7 @@ public class InstructionsPageRenderer {
         ScreenDrawSupport.drawButton(graphics, new Rectangle(230, 270, 80, 50), "→ / D", 24);
         ScreenDrawSupport.drawButton(graphics, new Rectangle(460, 190, 50, 50), "R", 24);
         ScreenDrawSupport.drawButton(graphics, new Rectangle(455, 270, 100, 50), "Shift", 24);
-        ScreenDrawSupport.drawButton(graphics, new Rectangle(280, 350, 150, 50), "↑ / Space", 24);
+        ScreenDrawSupport.drawButton(graphics, new Rectangle(280, 350, 200, 50), "↑ / W / Space", 24);
 
         graphics.setColor(Color.WHITE);
         graphics.setFont(new Font("SansSerif", Font.BOLD, 24));
@@ -42,7 +42,7 @@ public class InstructionsPageRenderer {
         ScreenDrawSupport.drawCenteredString(graphics, "向右移动", 300, 295, 150);
         ScreenDrawSupport.drawCenteredString(graphics, "重新开始本关", 530, 215, 150);
         ScreenDrawSupport.drawCenteredString(graphics, "加速移动", 550, 295, 150);
-        ScreenDrawSupport.drawCenteredString(graphics, "跳跃", 450, 375, 150);
+        ScreenDrawSupport.drawCenteredString(graphics, "跳跃", 480, 375, 150);
 
         // 绘制返回按钮
         ScreenDrawSupport.drawButton(graphics, backButtonBounds, "返回", 24);
