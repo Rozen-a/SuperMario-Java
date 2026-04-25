@@ -60,6 +60,14 @@ public class StartScreen {
     }
 
     /**
+     * 显示开始界面并回到菜单页。
+     */
+    public void show() {
+        visible = true;
+        pageState = PageState.MENU;
+    }
+
+    /**
      * 处理开始界面的鼠标点击
      *
      * @param mouseX 鼠标 x 坐标

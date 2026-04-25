@@ -21,6 +21,9 @@ public class StaticValue {
     // Logo
     public static BufferedImage logo = null;
 
+    // 返回主菜单图片
+    public static BufferedImage home = null;
+
     // 马里奥动作
     public static BufferedImage mario_jump_L = null;
     public static BufferedImage mario_jump_R = null;
@@ -83,6 +86,8 @@ public class StaticValue {
         // 加载Logo图片
         logo = loadImage("logo.png");
 
+        // 加载返回主菜单图片
+        home = loadImage("home.png");
 
         // 加载马里奥动作图片
         mario_jump_L = loadImage("mario_jump_L.png");

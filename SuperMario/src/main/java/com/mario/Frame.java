@@ -35,7 +35,7 @@ public class Frame extends JFrame implements KeyListener {
     private Mario mario;  // 马里奥对象
     private Image offScreenImage = null;  // 双缓存
     private Timer gameTimer;  // 主循环计时器（用于统一暂停/结束游戏）
-    private final StartScreen startScreen = new StartScreen();  // 开始界面
+    private final StartScreen startScreen = new StartScreen();  // 开始界面,内部初始状态默认为可见
     private final GameUiRenderer gameUiRenderer = new GameUiRenderer();  // 游戏运行时顶部 UI 绘制器
     private int currentLevelStartScore = 0;  // 当前关卡的起始积分
     
@@ -167,12 +167,41 @@ public class Frame extends JFrame implements KeyListener {
     }
 
     /**
-     * 处理菜单界面的鼠标点击。
+     * 返回主菜单，并冻结当前关卡中的角色状态。
+     */
+    private void returnToMainMenu() {
+        // 冻结当前关卡中的角色状态
+        if (mario != null) {
+            mario.resetMotionState();
+            mario.setScriptedMode(true);
+        }
+        // 重置当前关卡积分
+        currentLevelStartScore = 0;
+        // 显示开始界面并回到菜单页
+        startScreen.show();
+        repaint();
+        MusicPlayer.playBGM("Ground");
+    }
+
+    /**
+     * 处理鼠标点击。
      *
      * @param mouseX 鼠标 x 坐标
      * @param mouseY 鼠标 y 坐标
      */
     private void handleMouseClick(int mouseX, int mouseY) {
+        // 开始菜单不可见（即处于游戏运行界面时）
+        if (!startScreen.isVisible()) {
+            // 条件判断：马里奥对象已初始化、游戏尚未结束（未通关或失败），且鼠标精准点击了UI上的“主页”图标
+            if (mario != null && !gameStateController.isGameEnded()
+                    && gameUiRenderer.isHomeIconClicked(mouseX, mouseY)) {
+                // 冻结当前游戏状态并返回主菜单
+                returnToMainMenu();
+            }
+            return;
+        }
+
+        // 处理开始界面点击
         StartScreen.Action action = startScreen.handleClick(mouseX, mouseY);
         if (action == StartScreen.Action.START_GAME) {
             startGame();
@@ -242,9 +271,11 @@ public class Frame extends JFrame implements KeyListener {
         Graphics graphics = offScreenImage.getGraphics();
         // 每帧先清空画布，避免残影
         graphics.fillRect(0, 0, 900, 600);
+        // 绘制开始界面（如果可见）
         if (startScreen.isVisible()) {
             startScreen.draw(graphics, this);
         } else {
+            // 否则绘制游戏运行界面
             drawGameScreen(graphics);
         }
 
@@ -296,7 +327,7 @@ public class Frame extends JFrame implements KeyListener {
         }
 
         // 顶部 HUD 统一交给独立的 UI 绘制器处理。
-        gameUiRenderer.draw(graphics, mario);
+        gameUiRenderer.draw(graphics, mario, this);
     }
 
     /**
