@@ -1,78 +1,81 @@
 package com.mario.controller;
 
 import com.mario.entity.creature.Mario;
-import com.mario.entity.scene.Tower;
 import com.mario.entity.scene.Background;
+import com.mario.entity.scene.Tower;
 import com.mario.service.FlagSequence;
 import com.mario.util.MusicPlayer;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.Timer;
 
 /**
  * 游戏状态控制器：
  * - 管理通关/失败状态；
  * - 封装通关判定；
- * - 统一处理“停止循环 + 弹窗 + 退出”。
+ * - 统一处理结算时的角色冻结；
+ * - 不直接负责界面绘制与按钮交互，这部分由 Frame 和结算 UI 处理。
  */
 public class GameStateController {
-    private final JFrame owner;  // 弹窗所属窗口
+    /**
+     * 游戏结算结果枚举。
+     */
+    public enum ResultType {
+        NONE,
+        GAME_OVER,
+        GAME_COMPLETED
+    }
+
     private final Mario mario;  // 需要冻结状态的主角对象
-    private Timer gameTimer;  // 主循环计时器（用于停止游戏更新）
-    private boolean gameCompleted;  // 是否已达成通关
-    private boolean gameOver;  // 是否已触发失败
+    private ResultType resultType = ResultType.NONE;  // 当前结算结果
 
     /**
      * 创建游戏状态控制器。
      *
-     * @param owner 绑定的主窗口
      * @param mario 马里奥对象
      */
-    public GameStateController(JFrame owner, Mario mario) {
-        this.owner = owner;
+    public GameStateController(Mario mario) {
         this.mario = mario;
     }
 
     /**
-     * 注入主循环计时器，便于在结算时停止循环。
+     * 获取当前结算结果。
+     *
+     * @return 当前结算状态，NONE 表示游戏仍在进行中
      */
-    public void setGameTimer(Timer gameTimer) {
-        this.gameTimer = gameTimer;
+    public ResultType getResultType() {
+        return resultType;
     }
 
     /**
      * 检查游戏是否已达成通关。
      */
     public boolean isGameCompleted() {
-        return gameCompleted;
+        return resultType == ResultType.GAME_COMPLETED;
     }
 
     /**
      * 检查游戏是否已触发失败。
      */
     public boolean isGameOver() {
-        return gameOver;
+        return resultType == ResultType.GAME_OVER;
     }
 
     /**
      * 检查游戏是否已结束（通关/失败）。
      */
     public boolean isGameEnded() {
-        return gameCompleted || gameOver;
+        return resultType != ResultType.NONE;
     }
 
     /**
-     * 关卡重开/切关时重置状态标记。
+     * 关卡重开、重新挑战或回到菜单前重置结算状态。
      */
     public void reset() {
-        gameCompleted = false;
-        gameOver = false;
+        resultType = ResultType.NONE;
     }
 
     /**
      * 检查是否满足通关条件：
      * 1) 旗子流程完成；2) 马里奥到达城堡中心。
+     * 满足条件后只标记结果并冻结角色，由外层决定如何展示结算 UI。
      */
     public void checkWinCondition(Background background, FlagSequence flagSequence) {
         // 已结算或必要对象为空时不做判定
@@ -110,36 +113,24 @@ public class GameStateController {
             return;
         }
         
-        gameCompleted = true;
+        resultType = ResultType.GAME_COMPLETED;
+        // 进入结算态后立即冻结角色，确保画面停留在达成目标的瞬间。
+        freezeMario();
         MusicPlayer.playBGM("Win");
-        stopAndExit("闯关成功");
     }
 
     /**
      * 触发失败结算（可被碰撞等多个系统复用）。
+     * 失败后同样只切换状态，不直接退出程序。
      */
     public void triggerGameOver() {
         if (isGameEnded()) {
             return;
         }
-        gameOver = true;
-        MusicPlayer.playBGM("GameOver");
-        stopAndExit("游戏结束");
-    }
-
-    /**
-     * 通用结算流程：冻结角色、停止主循环、弹窗提示并退出程序。
-     *
-     * @param message 弹窗提示内容
-     */
-    private void stopAndExit(String message) {
+        resultType = ResultType.GAME_OVER;
+        // 失败后冻结角色，供上层绘制“游戏结束”覆盖层。
         freezeMario();
-        if (gameTimer != null) {
-            gameTimer.stop();
-        }
-        JOptionPane.showMessageDialog(owner, message);
-        owner.dispose();
-        System.exit(0);
+        MusicPlayer.playBGM("GameOver");
     }
 
     /**

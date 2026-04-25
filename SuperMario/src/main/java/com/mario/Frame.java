@@ -12,6 +12,7 @@ import com.mario.constant.StaticValue;
 import com.mario.util.MusicPlayer;
 import com.mario.entity.scene.Flag;
 import com.mario.ui.GameUiRenderer;
+import com.mario.ui.GameResultOverlay;
 import com.mario.ui.StartScreen;
 
 import javax.swing.*;
@@ -37,7 +38,10 @@ public class Frame extends JFrame implements KeyListener {
     private Timer gameTimer;  // 主循环计时器（用于统一暂停/结束游戏）
     private final StartScreen startScreen = new StartScreen();  // 开始界面,内部初始状态默认为可见
     private final GameUiRenderer gameUiRenderer = new GameUiRenderer();  // 游戏运行时顶部 UI 绘制器
+    private final GameResultOverlay gameResultOverlay = new GameResultOverlay();  // 结算覆盖层绘制器
     private int currentLevelStartScore = 0;  // 当前关卡的起始积分
+    private int deathCount = 0;  // 当前从菜单开始的一轮挑战中累计的死亡次数
+    private GameResultOverlay.OverlayType currentOverlayType = GameResultOverlay.OverlayType.NONE;  // 当前显示中的结算覆盖层类型
     
     private static final int NEXT_LEVEL_TRIGGER_X = 900;  // 触发下一关的 x 阈值
     private static final int MARIO_START_X = 10;  // 切关后马里奥初始 x
@@ -92,7 +96,7 @@ public class Frame extends JFrame implements KeyListener {
         // 初始化马里奥
         mario = new Mario(MARIO_START_X, MARIO_START_Y);
         enemyCollisionHandler = new EnemyCollisionHandler();
-        gameStateController = new GameStateController(this, mario);
+        gameStateController = new GameStateController(mario);
 
         // 启动固定帧重绘：
         // 1) 每隔 30ms 触发一次回调（约 33 FPS），用于持续刷新游戏画面；
@@ -103,14 +107,18 @@ public class Frame extends JFrame implements KeyListener {
                 repaint();
                 return;
             }
-            // 统一在主循环里推进关卡切换、过场、碰撞判定与渲染
-            switchToNextLevelIfNeeded();
-            flagSequence.update(now_background, mario);
-            enemyCollisionHandler.checkCollision(now_background, mario, gameStateController);
-            gameStateController.checkWinCondition(now_background, flagSequence);
+            if (!gameStateController.isGameEnded()) {
+                // 统一在主循环里推进关卡切换、过场、碰撞判定与渲染
+                switchToNextLevelIfNeeded();
+                flagSequence.update(now_background, mario);
+                enemyCollisionHandler.checkCollision(now_background, mario, gameStateController);
+                gameStateController.checkWinCondition(now_background, flagSequence);
+            }
+
+            // 同步结算覆盖层状态
+            syncResultOverlayState();
             repaint();
         });
-        gameStateController.setGameTimer(gameTimer);
         // 启动计时器后，回调开始周期性执行，角色移动/跳跃状态才能连续显示出来。
         gameTimer.start();
 
@@ -145,18 +153,24 @@ public class Frame extends JFrame implements KeyListener {
     }
 
     /**
-     * 重置当前关卡（重新加载场景数据并复位马里奥）
+     * 重置当前关卡（重新加载场景数据并复位马里奥）。
+     * 该入口用于“重新开始本关”，不会清空累计死亡次数。
      */
     private void resetCurrentLevel() {
         loadLevel(currentBackgroundIndex);
         // 重置关卡时重新播放 bgm
         MusicPlayer.playBGM("Ground");
+        // 确保窗口获得焦点，响应键盘输入
+        requestFocusInWindow();
+        repaint();
     }
 
     /**
-     * 从开始界面进入关卡
+     * 从开始界面进入关卡。
+     * 每次从菜单开始新一轮游戏时，都会重置死亡次数和分数进度。
      */
     private void startGame() {
+        deathCount = 0;
         startScreen.hide();
         currentBackgroundIndex = 0;
         currentLevelStartScore = 0;
@@ -168,6 +182,7 @@ public class Frame extends JFrame implements KeyListener {
 
     /**
      * 返回主菜单，并冻结当前关卡中的角色状态。
+     * 这里不主动清空死亡次数，而是在下次点击“开始”时统一重置。
      */
     private void returnToMainMenu() {
         // 冻结当前关卡中的角色状态
@@ -175,6 +190,9 @@ public class Frame extends JFrame implements KeyListener {
             mario.resetMotionState();
             mario.setScriptedMode(true);
         }
+        // 重置游戏状态控制器
+        gameStateController.reset();
+        currentOverlayType = GameResultOverlay.OverlayType.NONE;
         // 重置当前关卡积分
         currentLevelStartScore = 0;
         // 显示开始界面并回到菜单页
@@ -184,35 +202,71 @@ public class Frame extends JFrame implements KeyListener {
     }
 
     /**
+     * 将 GameStateController 中的结算结果同步到当前窗口的覆盖层状态
+     * 由于定时器会持续回调，这里还负责保证一次死亡只累加一次计数
+     */
+    private void syncResultOverlayState() {
+        // 已显示结算覆盖层或游戏未结束，不更新
+        if (currentOverlayType != GameResultOverlay.OverlayType.NONE || !gameStateController.isGameEnded()) {
+            return;
+        }
+        if (gameStateController.isGameOver()) {
+            // 仅在首次进入失败结算态时累计一次死亡次数。
+            deathCount++;
+            currentOverlayType = GameResultOverlay.OverlayType.GAME_OVER;
+            return;
+        }
+        if (gameStateController.isGameCompleted()) {
+            currentOverlayType = GameResultOverlay.OverlayType.GAME_COMPLETED;
+        }
+    }
+
+    /**
      * 处理鼠标点击。
      *
      * @param mouseX 鼠标 x 坐标
      * @param mouseY 鼠标 y 坐标
      */
     private void handleMouseClick(int mouseX, int mouseY) {
-        // 开始菜单不可见（即处于游戏运行界面时）
-        if (!startScreen.isVisible()) {
-            // 条件判断：马里奥对象已初始化、游戏尚未结束（未通关或失败），且鼠标精准点击了UI上的“主页”图标
-            if (mario != null && !gameStateController.isGameEnded()
-                    && gameUiRenderer.isHomeIconClicked(mouseX, mouseY)) {
-                // 冻结当前游戏状态并返回主菜单
+        if (startScreen.isVisible()) {
+            // 处理开始界面点击
+            StartScreen.Action action = startScreen.handleClick(mouseX, mouseY);
+            if (action == StartScreen.Action.START_GAME) {
+                startGame();
+                return;
+            }
+            if (action == StartScreen.Action.EXIT_GAME) {
+                exitGame();
+                return;
+            }
+            if (action == StartScreen.Action.REPAINT) {
+                repaint();
+            }
+            return;
+        }
+
+        if (currentOverlayType != GameResultOverlay.OverlayType.NONE) {
+            // 结算覆盖层显示期间，点击优先交给覆盖层按钮处理
+            GameResultOverlay.Action action = gameResultOverlay.handleClick(currentOverlayType, mouseX, mouseY);
+            if (action == GameResultOverlay.Action.RESTART_LEVEL) {
+                resetCurrentLevel();
+                return;
+            }
+            if (action == GameResultOverlay.Action.RESTART_GAME) {
+                startGame();
+                return;
+            }
+            if (action == GameResultOverlay.Action.BACK_TO_MENU) {
                 returnToMainMenu();
             }
             return;
         }
 
-        // 处理开始界面点击
-        StartScreen.Action action = startScreen.handleClick(mouseX, mouseY);
-        if (action == StartScreen.Action.START_GAME) {
-            startGame();
+        // 普通运行态下，home 图标仍然保留“返回主菜单”的能力。
+        if (mario != null && !gameStateController.isGameEnded()
+                && gameUiRenderer.isHomeIconClicked(mouseX, mouseY)) {
+            returnToMainMenu();
             return;
-        }
-        if (action == StartScreen.Action.EXIT_GAME) {
-            exitGame();
-            return;
-        }
-        if (action == StartScreen.Action.REPAINT) {
-            repaint();
         }
     }
 
@@ -235,6 +289,8 @@ public class Frame extends JFrame implements KeyListener {
     private void loadLevel(int index) {
         currentBackgroundIndex = index;
         gameStateController.reset();
+        // 每次重新加载关卡时都关闭结算覆盖层，恢复到正常游戏态。
+        currentOverlayType = GameResultOverlay.OverlayType.NONE;
 
         // 依据当前关卡序号重建背景，恢复障碍/旗子/旗杆初始状态
         int levelSort = currentBackgroundIndex + 1;
@@ -328,6 +384,11 @@ public class Frame extends JFrame implements KeyListener {
 
         // 顶部 HUD 统一交给独立的 UI 绘制器处理。
         gameUiRenderer.draw(graphics, mario, this);
+
+        // 结算时在冻结画面上层叠加 UI 覆盖层。
+        if (currentOverlayType != GameResultOverlay.OverlayType.NONE) {
+            gameResultOverlay.draw(graphics, currentOverlayType, mario != null ? mario.getScore() : 0, deathCount);
+        }
     }
 
     /**
