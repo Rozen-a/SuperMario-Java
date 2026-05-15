@@ -1,5 +1,6 @@
 package com.mario.service;
 
+import com.mario.ai.BehaviorEventListener;
 import com.mario.entity.creature.Enemy;
 import com.mario.entity.creature.Mario;
 import com.mario.entity.creature.Mushroom;
@@ -15,6 +16,17 @@ import com.mario.util.MusicPlayer;
  * - 其余碰撞：触发游戏失败。
  */
 public class EnemyCollisionHandler {
+    private BehaviorEventListener behaviorEventListener;  // 玩家行为事件监听器
+
+    /**
+     * 设置玩家行为事件监听器
+     *
+     * @param behaviorEventListener 监听器
+     */
+    public void setBehaviorEventListener(BehaviorEventListener behaviorEventListener) {
+        this.behaviorEventListener = behaviorEventListener;
+    }
+
     /**
      * 检测并处理马里奥与当前场景敌人的碰撞。
      *
@@ -66,12 +78,18 @@ public class EnemyCollisionHandler {
                 enemy.death();
                 MusicPlayer.playSound("EnemyDeath");
                 mario.addScore(2);
+                if (behaviorEventListener != null) {
+                    behaviorEventListener.onEnemyKilled(mario);
+                }
                 mario.setY(enemyY - marioH);
                 mario.setYSpeed(-10);
                 return;
             }
 
             // 其余碰撞统一判定为马里奥死亡
+            if (behaviorEventListener != null) {
+                behaviorEventListener.onEnemyHit(mario);
+            }
             gameStateController.triggerGameOver();
             return;
         }

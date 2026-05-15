@@ -1,5 +1,6 @@
 package com.mario.service;
 
+import com.mario.ai.BehaviorEventListener;
 import com.mario.entity.creature.Mario;
 import com.mario.entity.scene.Obstacle;
 import com.mario.entity.scene.Background;
@@ -16,6 +17,7 @@ public class MarioCollisionDetector {
     private static final int DEFAULT_MARIO_HEIGHT = 30;  // 固定碰撞盒高度
 
     private Background background;  // 当前场景背景（提供障碍物列表）
+    private BehaviorEventListener behaviorEventListener;  // 玩家行为事件监听器
 
     public MarioCollisionDetector(Background background) {
         this.background = background;
@@ -28,6 +30,15 @@ public class MarioCollisionDetector {
      */
     public void setBackground(Background background) {
         this.background = background;
+    }
+
+    /**
+     * 设置玩家行为事件监听器
+     *
+     * @param behaviorEventListener 监听器
+     */
+    public void setBehaviorEventListener(BehaviorEventListener behaviorEventListener) {
+        this.behaviorEventListener = behaviorEventListener;
     }
 
     /**
@@ -113,6 +124,9 @@ public class MarioCollisionDetector {
         if (obstacles.remove(obstacle)) {
             MusicPlayer.playSound("BreakBlock");
             mario.addScore(1);
+            if (behaviorEventListener != null) {
+                behaviorEventListener.onBreakableBlockBroken(mario);
+            }
         }
     }
 

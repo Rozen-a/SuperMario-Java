@@ -1,5 +1,6 @@
 package com.mario.entity.creature;
 
+import com.mario.ai.BehaviorEventListener;
 import com.mario.entity.scene.Background;
 import com.mario.service.MarioCollisionDetector;
 import com.mario.service.MarioMovementLogic;
@@ -113,6 +114,16 @@ public class Mario implements Runnable {
      */
     public void jump() {
         movementLogic.jump(this, collisionDetector);
+    }
+
+    /**
+     * 设置玩家行为事件监听器
+     *
+     * @param behaviorEventListener 监听器
+     */
+    public void setBehaviorEventListener(BehaviorEventListener behaviorEventListener) {
+        movementLogic.setBehaviorEventListener(behaviorEventListener);
+        collisionDetector.setBehaviorEventListener(behaviorEventListener);
     }
 
     /**

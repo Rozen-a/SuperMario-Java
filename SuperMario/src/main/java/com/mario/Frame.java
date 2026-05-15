@@ -1,5 +1,6 @@
 package com.mario;
 
+import com.mario.ai.HintController;
 import com.mario.entity.creature.Mario;
 import com.mario.entity.creature.Enemy;
 import com.mario.entity.scene.Obstacle;
@@ -39,6 +40,7 @@ public class Frame extends JFrame implements KeyListener {
     private final StartScreen startScreen = new StartScreen();  // 开始界面,内部初始状态默认为可见
     private final GameUiRenderer gameUiRenderer = new GameUiRenderer();  // 游戏运行时顶部 UI 绘制器
     private final GameResultOverlay gameResultOverlay = new GameResultOverlay();  // 结算覆盖层绘制器
+    private final HintController hintController = new HintController();  // 智能提示控制器
     private int currentLevelStartScore = 0;  // 当前关卡的起始积分
     private int deathCount = 0;  // 当前从菜单开始的一轮挑战中累计的死亡次数
     private GameResultOverlay.OverlayType currentOverlayType = GameResultOverlay.OverlayType.NONE;  // 当前显示中的结算覆盖层类型
@@ -97,6 +99,8 @@ public class Frame extends JFrame implements KeyListener {
         mario = new Mario(MARIO_START_X, MARIO_START_Y);
         enemyCollisionHandler = new EnemyCollisionHandler();
         gameStateController = new GameStateController(mario);
+        mario.setBehaviorEventListener(hintController);  // 马里奥行为事件监听器
+        enemyCollisionHandler.setBehaviorEventListener(hintController);  // 敌人碰撞事件监听器
 
         // 启动固定帧重绘：
         // 1) 每隔 30ms 触发一次回调（约 33 FPS），用于持续刷新游戏画面；
@@ -115,6 +119,8 @@ public class Frame extends JFrame implements KeyListener {
                 gameStateController.checkWinCondition(now_background, flagSequence);
             }
 
+            // 每帧根据最新行为特征刷新提示状态
+            hintController.update(mario, currentBackgroundIndex, gameStateController.isGameEnded());
             // 同步结算覆盖层状态
             syncResultOverlayState();
             repaint();
@@ -157,6 +163,7 @@ public class Frame extends JFrame implements KeyListener {
      * 该入口用于“重新开始本关”，不会清空累计死亡次数。
      */
     private void resetCurrentLevel() {
+        hintController.onRestart(mario);  // 重置提示状态
         loadLevel(currentBackgroundIndex);
         // 重置关卡时重新播放 bgm
         MusicPlayer.playBGM("Ground");
@@ -171,6 +178,7 @@ public class Frame extends JFrame implements KeyListener {
      */
     private void startGame() {
         deathCount = 0;
+        hintController.resetForNewGame();
         startScreen.hide();
         currentBackgroundIndex = 0;
         currentLevelStartScore = 0;
@@ -195,6 +203,7 @@ public class Frame extends JFrame implements KeyListener {
         currentOverlayType = GameResultOverlay.OverlayType.NONE;
         // 重置当前关卡积分
         currentLevelStartScore = 0;
+        hintController.clearCurrentHint();
         // 显示开始界面并回到菜单页
         startScreen.show();
         repaint();
@@ -213,10 +222,12 @@ public class Frame extends JFrame implements KeyListener {
         if (gameStateController.isGameOver()) {
             // 仅在首次进入失败结算态时累计一次死亡次数。
             deathCount++;
+            hintController.onDeath(mario);
             currentOverlayType = GameResultOverlay.OverlayType.GAME_OVER;
             return;
         }
         if (gameStateController.isGameCompleted()) {
+            hintController.clearCurrentHint();
             currentOverlayType = GameResultOverlay.OverlayType.GAME_COMPLETED;
         }
     }
@@ -309,6 +320,7 @@ public class Frame extends JFrame implements KeyListener {
 
         // 复位触旗过场状态
         flagSequence.reset();
+        hintController.onLevelStart(currentBackgroundIndex);
     }
 
     /**
@@ -382,8 +394,8 @@ public class Frame extends JFrame implements KeyListener {
             graphics.drawImage(mario.getShow(), mario.getX(), mario.getY(), this);
         }
 
-        // 顶部 HUD 统一交给独立的 UI 绘制器处理。
-        gameUiRenderer.draw(graphics, mario, this);
+        // 顶部 HUD 和智能提示统一交给独立的 UI 绘制器处理
+        gameUiRenderer.draw(graphics, mario, hintController.getCurrentHintText(), this);
 
         // 结算时在冻结画面上层叠加 UI 覆盖层。
         if (currentOverlayType != GameResultOverlay.OverlayType.NONE) {

@@ -1,5 +1,6 @@
 package com.mario.service;
 
+import com.mario.ai.BehaviorEventListener;
 import com.mario.entity.creature.Mario;
 import com.mario.constant.StaticValue;
 import com.mario.util.MusicPlayer;
@@ -27,6 +28,7 @@ public class MarioMovementLogic {
     private int jumpFrame;  // 当前上升已执行帧数
     private int runAnimationIndex;  // 跑步动画帧索引
     private int runAnimationTick;  // 跑步动画节拍计数
+    private BehaviorEventListener behaviorEventListener;  // 玩家行为事件监听器
 
     /**
      * 单帧更新入口：按顺序处理水平移动与垂直运动
@@ -78,6 +80,15 @@ public class MarioMovementLogic {
     }
 
     /**
+     * 设置玩家行为事件监听器
+     *
+     * @param behaviorEventListener 监听器
+     */
+    public void setBehaviorEventListener(BehaviorEventListener behaviorEventListener) {
+        this.behaviorEventListener = behaviorEventListener;
+    }
+
+    /**
      * 执行起跳动作
      *
      * @param mario 马里奥对象
@@ -91,6 +102,9 @@ public class MarioMovementLogic {
             jumpFrame = 0;
             mario.setStatus(faceRight ? "jump-right" : "jump-left");
             mario.setShow(faceRight ? StaticValue.mario_jump_R : StaticValue.mario_jump_L);
+            if (behaviorEventListener != null) {
+                behaviorEventListener.onJump(mario);
+            }
         }
     }
 
@@ -183,6 +197,9 @@ public class MarioMovementLogic {
                 mario.setShow(faceRight ? StaticValue.mario_jump_R : StaticValue.mario_jump_L);
             } else {
                 // 如果跳跃被障碍阻挡，则结束跳跃
+                if (behaviorEventListener != null) {
+                    behaviorEventListener.onFailedJump(mario);
+                }
                 detector.handleHeadHit(mario, result);
                 jumping = false;
                 mario.setYSpeed(0);
