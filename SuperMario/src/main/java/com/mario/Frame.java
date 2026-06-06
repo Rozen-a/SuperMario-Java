@@ -180,7 +180,7 @@ public class Frame extends JFrame implements KeyListener {
         deathCount = 0;
         hintController.resetForNewGame();
         startScreen.hide();
-        currentBackgroundIndex = 0;
+        currentBackgroundIndex = 2;
         currentLevelStartScore = 0;
         loadLevel(currentBackgroundIndex);
         MusicPlayer.playBGM("Ground");

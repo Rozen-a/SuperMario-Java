@@ -14,29 +14,29 @@ import java.util.Map;
  * 并输出困难识别所需的统计特征
  */
 public class PlayerBehaviorTracker {
-    private static final long WINDOW_FRAMES = 240;
-    private static final int STUCK_PROGRESS_THRESHOLD = 60;
-    private static final int DIRECTION_CHANGE_MIN_DELTA = 3;
+    private static final long WINDOW_FRAMES = 240;  // 滚动窗口大小
+    private static final int STUCK_PROGRESS_THRESHOLD = 60;  // 卡住进度阈值（如果最近窗口内横向推进距离不超过 60 像素，就认为玩家可能在原地徘徊。）
+    private static final int DIRECTION_CHANGE_MIN_DELTA = 3;  // 方向变化最小阈值
 
-    private final Deque<PositionSample> recentPositions = new ArrayDeque<>();
-    private final Deque<ActionSample> recentActions = new ArrayDeque<>();
-    private final Deque<Long> directionChangeFrames = new ArrayDeque<>();
-    private final Map<String, Integer> areaDeathCounts = new HashMap<>();
-    private final Map<String, Integer> areaRestartCounts = new HashMap<>();
+    private final Deque<PositionSample> recentPositions = new ArrayDeque<>();  // 记录最近窗口内的坐标采样点
+    private final Deque<ActionSample> recentActions = new ArrayDeque<>();  // 记录最近窗口内的关键行为事件
+    private final Deque<Long> directionChangeFrames = new ArrayDeque<>();  // 记录最近窗口内发生左右折返的帧号
+    private final Map<String, Integer> areaDeathCounts = new HashMap<>();  // 记录窗口内死亡次数
+    private final Map<String, Integer> areaRestartCounts = new HashMap<>();  // 记录窗口内重新开始次数
 
-    private long currentFrame;
-    private int currentLevelIndex;
-    private int currentAreaId = 1;
-    private int currentX;
-    private int currentY;
-    private Integer lastX;
-    private int lastDirection;
+    private long currentFrame;  // 当前帧号
+    private int currentLevelIndex;  // 当前关卡索引
+    private int currentAreaId = 1;  // 当前区域编号
+    private int currentX;  // 当前横坐标
+    private int currentY;  // 当前纵坐标
+    private Integer lastX;  // 上一横坐标，用于判断本帧是向左还是向右移动
+    private int lastDirection;  // 上一段有效移动方向：1 表示向右，-1 表示向左，0 表示未确定
+
 
     /**
      * 开始新的一轮游戏会话
      */
     public synchronized void startNewSession() {
-        // 会话级统计用于衡量同一区域重复失败次数
         areaDeathCounts.clear();
         areaRestartCounts.clear();
         clearRollingState();
